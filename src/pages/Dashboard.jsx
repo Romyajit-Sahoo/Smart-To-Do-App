@@ -85,7 +85,7 @@ export const Dashboard = () => {
       <header className="dashboard-greeting-wrap">
         <div className="greeting-left">
           <span className="greeting-pill"><Sparkles size={14} /> Welcome back</span>
-          <h2 className="greeting-title">{greeting}, Romyajit</h2>
+          <h2 className="greeting-title">{greeting}, User</h2>
           <p className="greeting-subtitle">{fullDate}</p>
         </div>
         <div className="productivity-rating-card glass-panel">
