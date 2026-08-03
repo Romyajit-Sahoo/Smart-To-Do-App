@@ -1,0 +1,330 @@
+.task-card {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.25rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--category-color);
+  transition: all var(--transition-normal);
+  margin-bottom: 0.75rem;
+  animation: fadeIn var(--transition-normal) ease-out;
+  overflow: hidden;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--scrollbar-thumb);
+}
+
+.task-card.deleting {
+  animation: fadeOut var(--transition-fast) ease-out forwards;
+}
+
+/* Card Delete Overlay (Glassmorphism Modal-like inline layout) */
+.card-delete-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px) saturate(110%);
+  -webkit-backdrop-filter: blur(12px) saturate(110%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 10;
+  padding: 0.5rem;
+}
+
+.delete-overlay-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.delete-overlay-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.delete-overlay-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-danger-pill {
+  background-color: var(--danger-light);
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger-pill:hover {
+  background-color: var(--danger);
+  color: white;
+  border-color: var(--danger);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
+}
+
+.btn-secondary-pill {
+  background-color: var(--surface-hover);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+.btn-secondary-pill:hover {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Card Main Layout */
+.task-card-main {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+/* Custom Checkbox Design */
+.checkbox-container {
+  display: block;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  user-select: none;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+  border-color: var(--primary);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.checkbox-container.locked {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.checkbox-container.locked input {
+  cursor: not-allowed;
+}
+
+.checkbox-container.locked:hover input ~ .checkmark {
+  border-color: var(--border-color);
+}
+
+.check-icon {
+  color: white;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: all var(--transition-fast);
+}
+
+.checkbox-container input:checked ~ .checkmark .check-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Completed State styling */
+.task-card.completed {
+  opacity: 0.65;
+  border-left-color: var(--border-color);
+}
+
+.task-card.completed .task-title {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+.task-card.completed .task-description {
+  color: var(--text-tertiary);
+}
+
+/* Details and Spacing */
+.task-details-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex: 1;
+}
+
+.task-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.task-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+/* Meta Data tags styling */
+.task-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+}
+
+.task-tag {
+  font-size: 0.725rem;
+  font-weight: 500;
+  color: var(--primary);
+  background-color: var(--primary-light);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-xs);
+}
+
+.task-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.task-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.cat-badge {
+  font-weight: 600;
+}
+
+.date-badge {
+  color: var(--text-secondary);
+}
+
+.overdue-text {
+  color: var(--danger) !important;
+  font-weight: 600;
+}
+
+.overdue-label {
+  font-size: 0.65rem;
+  padding: 0.125rem 0.375rem;
+  background-color: var(--danger-light);
+  color: var(--danger);
+  border-radius: var(--radius-xs);
+  font-weight: 700;
+}
+
+/* Micro animations */
+.spin-slow {
+  animation: spin 6s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Missed tasks indicators */
+.task-card.missed {
+  border-left-color: var(--danger) !important;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background-color: hsl(350, 85%, 99%);
+}
+
+[data-theme='dark'] .task-card.missed {
+  background-color: hsl(350, 85%, 8%);
+}
+
+.task-card.overdue-border {
+  border-left-color: var(--danger) !important;
+}
+
+/* Actions list layout */
+.task-card-actions {
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: all var(--transition-fast);
+}
+
+.task-card:hover .task-card-actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.action-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  transition: all var(--transition-fast);
+}
+
+.action-icon-btn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.action-icon-btn.delete-btn:hover {
+  background-color: var(--danger-light);
+  color: var(--danger);
+}
+
+@media (max-width: 768px) {
+  .task-card-actions {
+    opacity: 1;
+    transform: none;
+    align-self: flex-end;
+  }
+}

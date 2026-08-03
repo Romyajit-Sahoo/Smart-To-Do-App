@@ -1,0 +1,228 @@
+.app-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width-desktop);
+  height: 100vh;
+  border-radius: 0;
+  border-top: none;
+  border-left: none;
+  border-bottom: none;
+  background-color: var(--surface);
+  transition: width var(--transition-normal);
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.app-sidebar.collapsed {
+  width: var(--sidebar-width-collapsed);
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+
+.collapse-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  background-color: var(--surface);
+  transition: all var(--transition-fast);
+}
+
+.collapse-toggle-btn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* Sidebar Navigation */
+.sidebar-nav {
+  flex: 1;
+  padding: 1.5rem 0.75rem;
+  overflow-y: auto;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.nav-item-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.nav-item-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--surface-hover);
+}
+
+.nav-item-btn.active {
+  color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.nav-icon {
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.nav-item-btn:hover .nav-icon {
+  transform: scale(1.05);
+}
+
+.nav-label {
+  font-size: 0.95rem;
+  white-space: nowrap;
+  animation: fadeIn var(--transition-fast) ease-out;
+}
+
+.nav-badge {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  color: #fff;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Sidebar Footer (Productivity Card) */
+.sidebar-footer {
+  padding: 1.25rem 1rem;
+  border-top: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.productivity-card {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+}
+
+.prod-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.prod-card-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.prod-card-percent {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.prod-progress-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background-color: var(--border-color);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.prod-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #8b5cf6);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-normal);
+}
+
+.prod-card-desc {
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  display: block;
+}
+
+/* Collapsed Sidebar adjustments */
+.app-sidebar.collapsed .sidebar-header {
+  justify-content: center;
+}
+
+.app-sidebar.collapsed .collapse-toggle-btn {
+  position: absolute;
+  left: 68px;
+  top: 24px;
+  z-index: 10;
+}
+
+.app-sidebar.collapsed .logo-container {
+  justify-content: center;
+}
+
+.app-sidebar.collapsed .nav-item-btn {
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.app-sidebar.collapsed .nav-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  margin-left: 0;
+}
+
+/* Responsive Hide rules */
+@media (max-width: 768px) {
+  .app-sidebar {
+    display: none;
+  }
+}
