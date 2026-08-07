@@ -1,0 +1,99 @@
+.focus-goal-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.focus-goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.focus-goal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+}
+
+.focus-goal-title h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.goal-icon {
+  color: var(--primary);
+}
+
+.focus-goal-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.focus-goal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.focus-goal-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.goal-progress-text {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.goal-progress-ratio {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.goal-progress-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.goal-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #8b5cf6);
+  border-radius: var(--radius-full);
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.goal-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer-effect 2s infinite;
+}
+
+@keyframes shimmer-effect {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.goal-percent-text {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  text-align: right;
+  font-weight: 500;
+}

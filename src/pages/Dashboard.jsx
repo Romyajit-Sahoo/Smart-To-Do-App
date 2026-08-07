@@ -20,12 +20,13 @@ import {
   Activity,
   Layers,
   ChevronRight,
-  TrendingDown
+  TrendingDown,
+  Brain
 } from 'lucide-react';
 import './Dashboard.css';
 
 export const Dashboard = () => {
-  const { tasks, categories, activities, setActiveTab, getLocalDateString } = useApp();
+  const { tasks, categories, activities, setActiveTab, getLocalDateString, focusSessions } = useApp();
 
   // 1. Calculate Greeting message
   const greeting = useMemo(() => {
@@ -71,6 +72,54 @@ export const Dashboard = () => {
       return 'some time ago';
     }
   };
+
+  // Focus Stats calculation
+  const focusStats = useMemo(() => {
+    const todayStr = getLocalDateString();
+    const todaySessions = focusSessions.filter(s => s.timestamp.startsWith(todayStr));
+    const todayTime = todaySessions.reduce((acc, s) => acc + s.duration, 0);
+    const todayCount = todaySessions.length;
+    
+    let lastSessionDuration = 0;
+    if (focusSessions.length > 0) {
+      lastSessionDuration = focusSessions[0].duration; // Assuming sorted by newest first
+    }
+
+    // Basic Focus Streak Calculation
+    let currentFocusStreak = 0;
+    let checkDate = new Date();
+    
+    // Check if there is a session today
+    if (todayCount > 0) {
+      currentFocusStreak = 1;
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+    
+    // Look backwards day by day
+    while (true) {
+      const checkStr = getLocalDateString(checkDate);
+      if (focusSessions.some(s => s.timestamp.startsWith(checkStr))) {
+        currentFocusStreak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    const formatTime = (seconds) => {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      if (h > 0) return `${h}h ${m}m`;
+      return `${m}m`;
+    };
+
+    return { 
+      todayTime: formatTime(todayTime), 
+      todayCount, 
+      lastSessionDuration: formatTime(lastSessionDuration),
+      currentFocusStreak
+    };
+  }, [focusSessions, getLocalDateString]);
 
   // 4. SVG Progress Ring settings
   const radius = 50;
@@ -225,6 +274,31 @@ export const Dashboard = () => {
               <div className="streak-card-info">
                 <span className="streak-value">{streakStats.longestStreak} Days</span>
                 <span className="streak-label">🔥 Longest Streak</span>
+              </div>
+            </div>
+          </div>
+
+          {/* NEW: FOCUS SECTION */}
+          <div className="focus-dashboard-card glass-panel" style={{ marginTop: '1.5rem', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 className="section-panel-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Brain size={18} color="#6366f1" /> Deep Focus
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Today's Focus</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{focusStats.todayTime}</div>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Today's Sessions</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{focusStats.todayCount}</div>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Focus Streak</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{focusStats.currentFocusStreak} Days</div>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Last Session</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{focusStats.lastSessionDuration}</div>
               </div>
             </div>
           </div>

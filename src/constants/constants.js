@@ -20,6 +20,8 @@ export const TABS = {
   DASHBOARD: 'Dashboard',
   TASKS: 'Tasks',
   HABITS: 'Habits',
+  DEEP_FOCUS: 'Deep Focus',
+  FOCUS_SESSION: 'Focus Session',
   ANALYTICS: 'Analytics',
   CALENDAR: 'Calendar',
   GAMIFICATION: 'Gamification'

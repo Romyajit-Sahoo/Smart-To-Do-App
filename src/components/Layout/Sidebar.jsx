@@ -10,7 +10,8 @@ import {
   ChevronLeft, 
   ChevronRight,
   TrendingUp,
-  Trophy
+  Trophy,
+  Brain
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -27,6 +28,7 @@ export const Sidebar = () => {
     { id: TABS.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
     { id: TABS.TASKS, label: 'Tasks', icon: CheckSquare, badge: tasks.filter(t => !t.completed && !t.missed).length },
     { id: TABS.HABITS, label: 'Habits', icon: Flame },
+    { id: TABS.DEEP_FOCUS, label: 'Deep Focus', icon: Brain },
     { id: TABS.ANALYTICS, label: 'Analytics', icon: BarChart2 },
     { id: TABS.CALENDAR, label: 'Calendar', icon: Calendar },
     { id: TABS.GAMIFICATION, label: 'Rewards', icon: Trophy },

@@ -23,7 +23,7 @@ import {
 import './CalendarPage.css';
 
 export const CalendarPage = () => {
-  const { tasks, categories, dailyHistoryNotes, saveDailyHistoryNotes, getLocalDateString } = useApp();
+  const { tasks, categories, dailyHistoryNotes, saveDailyHistoryNotes, getLocalDateString, focusSessions } = useApp();
 
   // Local View States
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'timeline'
@@ -124,12 +124,16 @@ export const CalendarPage = () => {
 
     return cells.map(cell => {
       const performance = calculateDayPerformance(tasks, cell.dateStr);
+      const dayFocusSessions = focusSessions.filter(s => s.timestamp.startsWith(cell.dateStr));
+      const focusDuration = dayFocusSessions.reduce((acc, s) => acc + s.duration, 0);
       return {
         ...cell,
-        performance
+        performance,
+        focusDuration,
+        focusSessionsCount: dayFocusSessions.length
       };
     });
-  }, [currentMonth, currentYear, tasks]);
+  }, [currentMonth, currentYear, tasks, focusSessions]);
 
   // 2. Open Details Dialog handler
   const handleOpenDayDetails = (dateStr) => {
@@ -165,12 +169,16 @@ export const CalendarPage = () => {
       const performance = calculateDayPerformance(tasks, dateStr);
       const savedNotes = dailyHistoryNotes[dateStr] || {};
       const dayTasks = tasks.filter(t => t.dueDate === dateStr);
+      const dayFocusSessions = focusSessions.filter(s => s.timestamp.startsWith(dateStr));
+      const focusDuration = dayFocusSessions.reduce((acc, s) => acc + s.duration, 0);
       return {
         dateStr,
         performance,
         notes: savedNotes.notes,
         mood: savedNotes.mood,
-        tasks: dayTasks
+        tasks: dayTasks,
+        focusDuration,
+        focusSessionsCount: dayFocusSessions.length
       };
     });
 
@@ -211,12 +219,18 @@ export const CalendarPage = () => {
     return daysList;
   }, [tasks, dailyHistoryNotes, searchQuery, timelineFilter, timelineCategory, categories, getLocalDateString]);
 
-  // Selected Date Breakdown Stats (for Modal Details)
   const selectedDayDetailed = useMemo(() => {
     if (!selectedDateStr) return null;
     const dayTasks = tasks.filter(t => t.dueDate === selectedDateStr);
-    return calculateDayDetailedStats(dayTasks, categories);
-  }, [selectedDateStr, tasks, categories]);
+    const dayFocusSessions = focusSessions.filter(s => s.timestamp.startsWith(selectedDateStr));
+    const focusDuration = dayFocusSessions.reduce((acc, s) => acc + s.duration, 0);
+    
+    return {
+      ...calculateDayDetailedStats(dayTasks, categories),
+      focusDuration,
+      focusSessionsCount: dayFocusSessions.length
+    };
+  }, [selectedDateStr, tasks, categories, focusSessions]);
 
   // Mood Config mapping
   const moodPills = [
@@ -301,6 +315,11 @@ export const CalendarPage = () => {
                       <span className="cell-stats-ratio">
                         {cell.performance.completed}/{cell.performance.total}
                       </span>
+                    </div>
+                  )}
+                  {cell.focusSessionsCount > 0 && (
+                    <div className="day-cell-focus" style={{ fontSize: '0.7rem', color: '#6366f1', marginTop: 'auto', textAlign: 'center', fontWeight: '500' }}>
+                      {Math.floor(cell.focusDuration / 60)}m focus
                     </div>
                   )}
                 </button>
@@ -390,6 +409,12 @@ export const CalendarPage = () => {
                         <span className="timeline-ratio-val">{day.performance.completed}/{day.performance.total} tasks</span>
                       </div>
                       
+                      {day.focusSessionsCount > 0 && (
+                        <div style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: '500', marginBottom: '0.5rem' }}>
+                          🧠 {Math.floor(day.focusDuration / 60)}m Focus ({day.focusSessionsCount} sessions)
+                        </div>
+                      )}
+
                       <button 
                         className="timeline-action-btn"
                         onClick={() => handleOpenDayDetails(day.dateStr)}
@@ -469,6 +494,12 @@ export const CalendarPage = () => {
                 <span className="bubble-val">{selectedDayDetailed.avgCompletionTimeText}</span>
                 <span className="bubble-lbl">Avg Completion Time</span>
               </div>
+              {selectedDayDetailed.focusSessionsCount > 0 && (
+                <div className="detail-stat-bubble glass-panel" style={{ borderLeft: '2px solid #6366f1' }}>
+                  <span className="bubble-val">{Math.floor(selectedDayDetailed.focusDuration / 60)}m</span>
+                  <span className="bubble-lbl">Total Focus</span>
+                </div>
+              )}
             </div>
 
             {/* 2. Task Details List */}

@@ -56,6 +56,17 @@ export const AppProvider = ({ children }) => {
   const [firedReminders, setFiredReminders] = useLocalStorage('firedReminders', []);
   const [snoozedReminders, setSnoozedReminders] = useLocalStorage('snoozedReminders', {});
 
+  // 6.d Deep Focus State
+  const [focusSessions, setFocusSessions] = useLocalStorage('focusSessions', []);
+  const [runningFocusSession, setRunningFocusSession] = useLocalStorage('runningFocusSession', null);
+  const [focusDistractions, setFocusDistractions] = useLocalStorage('focusDistractions', {
+    pauseCount: 0,
+    stopCount: 0,
+    browserHiddenCount: 0,
+    windowLostFocusCount: 0,
+    idleTime: 0
+  });
+
   // 7. General Navigation & Search Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
@@ -747,6 +758,11 @@ export const AppProvider = ({ children }) => {
     }));
   };
 
+  // Save Focus Session (Feature 8 / Phase 2)
+  const saveFocusSession = (sessionData) => {
+    setFocusSessions(prev => [sessionData, ...prev]);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -790,7 +806,14 @@ export const AppProvider = ({ children }) => {
         setFilters,
         sortBy,
         setSortBy,
-        getLocalDateString
+        getLocalDateString,
+        focusSessions,
+        setFocusSessions,
+        saveFocusSession,
+        runningFocusSession,
+        setRunningFocusSession,
+        focusDistractions,
+        setFocusDistractions
       }}
     >
       {children}

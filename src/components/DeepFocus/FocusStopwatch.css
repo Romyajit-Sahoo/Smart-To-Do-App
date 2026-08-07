@@ -1,0 +1,92 @@
+.focus-stopwatch-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 2rem;
+  gap: 2rem;
+}
+
+.stopwatch-display {
+  font-size: 5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.stopwatch-display.running {
+  color: #10b981;
+  text-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+}
+
+.stopwatch-display.paused {
+  color: #f59e0b;
+  animation: pulse-soft 2s infinite;
+}
+
+.stopwatch-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.sw-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-full);
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+}
+
+.sw-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sw-start, .sw-resume {
+  background: var(--primary);
+}
+
+.sw-start:hover, .sw-resume:hover {
+  background: var(--primary-hover);
+}
+
+.sw-pause {
+  background: #f59e0b;
+}
+
+.sw-pause:hover {
+  background: #d97706;
+}
+
+.sw-stop {
+  background: #ef4444;
+}
+
+.sw-stop:hover {
+  background: #dc2626;
+}
+
+.sw-reset {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  padding: 1rem;
+}
+
+.sw-reset:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+@keyframes pulse-soft {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}

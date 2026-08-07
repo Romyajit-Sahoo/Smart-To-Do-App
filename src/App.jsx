@@ -10,6 +10,8 @@ import { CalendarPage } from './pages/CalendarPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { GamificationPage } from './pages/GamificationPage';
 import { HabitsPage } from './pages/HabitsPage';
+import { DeepFocusPage } from './pages/DeepFocusPage';
+import { FocusSessionPage } from './pages/FocusSessionPage';
 import { Star } from 'lucide-react';
 import { GamificationProvider } from './context/GamificationContext';
 
@@ -30,12 +32,14 @@ const AppContent = () => {
         {activeTab === TABS.DASHBOARD && <Dashboard />}
         {activeTab === TABS.TASKS && <TasksPage />}
         {activeTab === TABS.HABITS && <HabitsPage />}
+        {activeTab === TABS.DEEP_FOCUS && <DeepFocusPage />}
+        {activeTab === TABS.FOCUS_SESSION && <FocusSessionPage />}
         {activeTab === TABS.CALENDAR && <CalendarPage />}
         {activeTab === TABS.ANALYTICS && <AnalyticsPage />}
         {activeTab === TABS.GAMIFICATION && <GamificationPage />}
 
         {/* Placeholder pages for future features */}
-        {activeTab !== TABS.DASHBOARD && activeTab !== TABS.TASKS && activeTab !== TABS.HABITS && activeTab !== TABS.CALENDAR && activeTab !== TABS.ANALYTICS && activeTab !== TABS.GAMIFICATION && (
+        {activeTab !== TABS.DASHBOARD && activeTab !== TABS.TASKS && activeTab !== TABS.HABITS && activeTab !== TABS.DEEP_FOCUS && activeTab !== TABS.FOCUS_SESSION && activeTab !== TABS.CALENDAR && activeTab !== TABS.ANALYTICS && activeTab !== TABS.GAMIFICATION && (
           <div className="page-container" style={{ animation: 'fadeIn 0.3s ease-out' }}>
             <div className="glass-panel" style={{ padding: '3rem 2rem', textAlign: 'center', marginTop: '2rem' }}>
               <div style={{

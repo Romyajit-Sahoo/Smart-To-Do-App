@@ -7,7 +7,8 @@ import {
   Flame, 
   BarChart2, 
   Calendar,
-  Trophy 
+  Trophy,
+  Brain
 } from 'lucide-react';
 import './MobileNav.css';
 
@@ -17,6 +18,7 @@ export const MobileNav = () => {
   const navItems = [
     { id: TABS.DASHBOARD, label: 'Home', icon: LayoutDashboard },
     { id: TABS.TASKS, label: 'Tasks', icon: CheckSquare, badge: tasks.filter(t => !t.completed && !t.missed).length },
+    { id: TABS.DEEP_FOCUS, label: 'Focus', icon: Brain },
     { id: TABS.CALENDAR, label: 'History', icon: Calendar },
     { id: TABS.ANALYTICS, label: 'Stats', icon: BarChart2 },
     { id: TABS.GAMIFICATION, label: 'Rewards', icon: Trophy }

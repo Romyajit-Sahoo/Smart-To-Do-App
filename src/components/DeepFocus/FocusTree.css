@@ -1,0 +1,101 @@
+.focus-tree-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+  height: 100%;
+  min-height: 250px;
+}
+
+.focus-tree-container.empty {
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.tree-empty-icon {
+  opacity: 0.3;
+}
+
+.tree-visual-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.tree-icon-wrapper {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: #10b981;
+  transition: all 1s ease-in-out;
+}
+
+.seed-dot {
+  width: 12px;
+  height: 12px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+.full-tree {
+  color: #059669;
+  filter: drop-shadow(0 10px 15px rgba(16, 185, 129, 0.3));
+}
+
+/* Animations based on state */
+.tree-icon-wrapper.running {
+  animation: gentle-sway 4s ease-in-out infinite;
+}
+
+.tree-icon-wrapper.paused {
+  opacity: 0.7;
+  filter: grayscale(0.5);
+}
+
+@keyframes gentle-sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.tree-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tree-stage-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.tree-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.tree-progress-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: var(--radius-full);
+  transition: width 1s linear;
+}
+
+.tree-progress-fill.paused {
+  background: #f59e0b;
+}
+
+.tree-progress-text {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}

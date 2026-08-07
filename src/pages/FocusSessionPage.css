@@ -1,0 +1,126 @@
+.focus-session-page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100%;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fullscreen and Minimal Mode Overrides */
+.focus-session-page.is-fullscreen,
+.focus-session-page.is-minimal {
+  max-width: none;
+  border-radius: 0;
+  padding: 3rem;
+}
+
+/* Topbar */
+.session-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.exit-session-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.exit-session-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.session-modes {
+  display: flex;
+  gap: 1rem;
+}
+
+.mode-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-toggle-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.mode-toggle-btn.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Workspace Grid */
+.session-workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  flex: 1;
+}
+
+.workspace-center {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.workspace-auxiliary {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Minimal Mode specific centering */
+.focus-session-page.is-minimal .session-workspace-grid {
+  grid-template-columns: minmax(auto, 600px) minmax(auto, 300px);
+  justify-content: center;
+  align-content: center;
+}
+
+@media (max-width: 1024px) {
+  .session-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .focus-session-page.is-minimal .session-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 
+  Graceful Minimal/Fullscreen Layout Control 
+  Applied to document.body to hide surrounding UI without breaking native grid/flex
+*/
+body.session-minimal-active .app-sidebar,
+body.session-minimal-active .header,
+body.session-minimal-active .mobile-nav {
+  display: none !important;
+}
+
+body.session-minimal-active .main-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}

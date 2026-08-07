@@ -29,12 +29,14 @@ import {
   Briefcase,
   Layers,
   ChevronRight,
-  TrendingDown
+  TrendingDown,
+  Brain
 } from 'lucide-react';
+import { FocusAnalytics } from '../components/DeepFocus/FocusAnalytics';
 import './AnalyticsPage.css';
 
 export const AnalyticsPage = () => {
-  const { tasks, categories, getLocalDateString } = useApp();
+  const { tasks, categories, getLocalDateString, focusSessions } = useApp();
 
   // Local state scopes
   const [trendDays, setTrendDays] = useState(7); // 7 | 30 | 90
@@ -82,6 +84,40 @@ export const AnalyticsPage = () => {
       return filteredTasks.some(t => t.dueDate === dateStr && t.missed);
     }).length;
   }, [filteredTasks]);
+
+  // Focus specific insights
+  const focusInsights = useMemo(() => {
+    const totalTime = focusSessions.reduce((acc, s) => acc + s.duration, 0);
+    
+    // Most productive hour
+    const hourCounts = {};
+    focusSessions.forEach(s => {
+      const d = new Date(s.timestamp);
+      const h = d.getHours();
+      hourCounts[h] = (hourCounts[h] || 0) + s.duration;
+    });
+    let maxHour = -1;
+    let maxHourDur = 0;
+    for (const h in hourCounts) {
+      if (hourCounts[h] > maxHourDur) {
+        maxHour = h;
+        maxHourDur = hourCounts[h];
+      }
+    }
+    const mostProductiveHour = maxHour >= 0 ? `${maxHour}:00 - ${parseInt(maxHour)+1}:00` : 'Not enough data';
+
+    const formatTime = (seconds) => {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      if (h > 0) return `${h}h ${m}m`;
+      return `${m}m`;
+    };
+
+    return {
+      totalTime: formatTime(totalTime),
+      mostProductiveHour
+    };
+  }, [focusSessions]);
 
   // 1. Export CSV Handler
   const handleExportCSV = () => {
@@ -282,12 +318,35 @@ export const AnalyticsPage = () => {
         </div>
       </section>
 
+      {/* SECTION 1.5: FOCUS QUICK SUMMARY */}
+      <section className="analytics-stats-grid" aria-label="Focus summary stats" style={{ marginTop: '1.5rem' }}>
+        <div className="analytics-stat-card glass-panel" style={{ borderLeft: '3px solid #6366f1' }}>
+          <span className="card-label">Total Focus Time</span>
+          <span className="card-value flex-align">
+            <Brain size={24} color="#6366f1" /> {focusInsights.totalTime}
+          </span>
+          <span className="card-sub-info">Lifetime duration</span>
+        </div>
+        <div className="analytics-stat-card glass-panel" style={{ borderLeft: '3px solid #10b981' }}>
+          <span className="card-label">Most Productive Hour</span>
+          <span className="card-value flex-align">
+            <Clock size={24} color="#10b981" />
+          </span>
+          <span className="card-sub-info" style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--text-primary)', marginTop: '0.25rem' }}>
+            {focusInsights.mostProductiveHour}
+          </span>
+        </div>
+      </section>
+
       {/* MAIN LAYOUT COLUMNS */}
       <div className="analytics-two-columns">
         
         {/* LEFT COLUMN: CHARTS TRENDS, BAR WEEKLY */}
         <div className="analytics-col-left">
           
+          {/* NEW: FOCUS ANALYTICS WIDGET */}
+          <FocusAnalytics />
+
           {/* SECTION 2: DAILY PRODUCTIVITY TREND LINE CHART */}
           <div className="chart-panel-card glass-panel">
             <div className="chart-header-row">
