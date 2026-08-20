@@ -4,7 +4,31 @@ import { Target, CheckCircle2, Circle, Flame, CheckSquare } from 'lucide-react';
 import './CurrentFocusTask.css';
 
 export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
-  const { tasks, habits, runningFocusSession, getLocalDateString } = useApp();
+  const appState = useApp() || {};
+  const { 
+    tasks = [], 
+    habits = [], 
+    runningFocusSession = null, 
+    getLocalDateString = () => new Date().toISOString().split('T')[0],
+    dailyRecords: contextDailyRecords 
+  } = appState;
+
+  // Defensive fallbacks for GitHub pages deployment with empty localStorage
+  const rawDailyRecords = contextDailyRecords ?? (
+    (() => {
+      try {
+        return JSON.parse(localStorage.getItem('dailyRecords'));
+      } catch {
+        return null;
+      }
+    })()
+  ) ?? {};
+
+  // Ensure dailyRecords is always an object to safely access properties
+  const dailyRecords = (typeof rawDailyRecords === 'object' && rawDailyRecords !== null && !Array.isArray(rawDailyRecords))
+    ? rawDailyRecords
+    : {};
+
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionTab, setSelectionTab] = useState('tasks'); // 'tasks' | 'habits'
 
@@ -20,8 +44,9 @@ export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
     return tasks.filter(t => !t.completed && !t.missed && t.dueDate === todayStr);
   };
 
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
   const isCompleted = activeTask?.type === 'task' 
-    ? tasks.find(t => t.id === activeTask?.id)?.completed 
+    ? safeTasks.find(t => t.id === activeTask?.id)?.completed 
     : dailyRecords[getLocalDateString()]?.[activeTask?.id];
 
   if (activeTask) {
@@ -71,6 +96,9 @@ export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
     );
   }
 
+  const safeFilteredTasks = Array.isArray(getFilteredTasks()) ? getFilteredTasks() : [];
+  const safeHabits = Array.isArray(habits) ? habits : [];
+
   if (isSelecting) {
     return (
       <div className="current-focus-task-card glass-panel cft-selecting">
@@ -96,8 +124,8 @@ export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
 
         <div className="cft-list">
           {selectionTab === 'tasks' ? (
-            getFilteredTasks().length > 0 ? (
-              getFilteredTasks().map(task => (
+            safeFilteredTasks.length > 0 ? (
+              safeFilteredTasks.map(task => (
                 <div key={task.id} className="cft-list-item" onClick={() => handleSelect(task, 'task')}>
                   <Circle size={16} className="cft-list-icon" />
                   <div className="cft-list-content">
@@ -110,8 +138,8 @@ export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
               <div className="cft-empty">No pending tasks found.</div>
             )
           ) : (
-            habits.length > 0 ? (
-              habits.map(habit => (
+            safeHabits.length > 0 ? (
+              safeHabits.map(habit => (
                 <div key={habit.id} className="cft-list-item" onClick={() => handleSelect(habit, 'habit')}>
                   <Flame size={16} className="cft-list-icon habit" />
                   <div className="cft-list-content">
