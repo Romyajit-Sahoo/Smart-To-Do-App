@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { TABS } from '../constants/constants';
 import { CurrentFocusTask } from '../components/DeepFocus/CurrentFocusTask';
 import { FocusStopwatch } from '../components/DeepFocus/FocusStopwatch';
+import { FocusCountdown } from '../components/DeepFocus/FocusCountdown';
 import { FocusTree } from '../components/DeepFocus/FocusTree';
 import { DistractionTracker } from '../components/DeepFocus/DistractionTracker';
 import { SessionNotesModal } from '../components/DeepFocus/SessionNotesModal';
@@ -26,7 +27,15 @@ export const FocusSessionPage = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMinimal, setIsMinimal] = useState(false);
   const [completedSessionData, setCompletedSessionData] = useState(null);
+  const [timerMode, setTimerMode] = useState(() => runningFocusSession?.mode || 'stopwatch');
   const containerRef = useRef(null);
+
+  // Sync mode if it changes externally
+  useEffect(() => {
+    if (runningFocusSession?.mode) {
+      setTimerMode(runningFocusSession.mode);
+    }
+  }, [runningFocusSession?.mode]);
 
   // Fullscreen toggle logic - target the container specifically for native browser isolation
   const toggleFullscreen = () => {
@@ -247,7 +256,49 @@ export const FocusSessionPage = () => {
             onTaskSelect={handleTaskSelect} 
             onTaskComplete={handleTaskComplete} 
           />
-          <FocusStopwatch onSessionStop={handleSessionStop} />
+          
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', margin: '2rem 0 1rem 0' }}>
+            <button 
+              onClick={() => setTimerMode('stopwatch')}
+              style={{ 
+                padding: '0.6rem 1.5rem', 
+                borderRadius: 'var(--radius-full)', 
+                background: timerMode === 'stopwatch' ? 'var(--primary)' : 'rgba(255,255,255,0.05)', 
+                color: 'white', 
+                border: timerMode === 'stopwatch' ? 'none' : '1px solid rgba(255,255,255,0.1)', 
+                cursor: (isRunning || status === 'paused') ? 'not-allowed' : 'pointer', 
+                fontWeight: 600,
+                opacity: (isRunning || status === 'paused') && timerMode !== 'stopwatch' ? 0.5 : 1,
+                transition: 'all 0.2s'
+              }}
+              disabled={isRunning || status === 'paused'}
+            >
+              Stopwatch Mode
+            </button>
+            <button 
+              onClick={() => setTimerMode('countdown')}
+              style={{ 
+                padding: '0.6rem 1.5rem', 
+                borderRadius: 'var(--radius-full)', 
+                background: timerMode === 'countdown' ? 'var(--primary)' : 'rgba(255,255,255,0.05)', 
+                color: 'white', 
+                border: timerMode === 'countdown' ? 'none' : '1px solid rgba(255,255,255,0.1)', 
+                cursor: (isRunning || status === 'paused') ? 'not-allowed' : 'pointer', 
+                fontWeight: 600,
+                opacity: (isRunning || status === 'paused') && timerMode !== 'countdown' ? 0.5 : 1,
+                transition: 'all 0.2s'
+              }}
+              disabled={isRunning || status === 'paused'}
+            >
+              Countdown Mode
+            </button>
+          </div>
+
+          {timerMode === 'countdown' ? (
+            <FocusCountdown onSessionStop={handleSessionStop} />
+          ) : (
+            <FocusStopwatch onSessionStop={handleSessionStop} />
+          )}
         </div>
 
         {/* Auxiliary components (Tree always visible if running, Distractions hidden in minimal mode) */}
