@@ -80,8 +80,9 @@
 /* SECTION 2 & 3: STATS GRID CARDS */
 .dashboard-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
   gap: 1rem;
+  width: 100%;
 }
 
 .stats-card {
@@ -512,16 +513,49 @@
   }
   
   .greeting-title {
-    font-size: 1.5rem;
+    font-size: clamp(1.3rem, 4vw, 1.6rem);
   }
   
   .progress-motivation-card {
     flex-direction: column;
     text-align: center;
     gap: 1.25rem;
+    padding: 1.25rem 1rem;
   }
   
   .motivation-banner-text {
     justify-content: center;
+  }
+
+  .streaks-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 425px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .stats-card {
+    padding: 0.875rem;
+    gap: 0.625rem;
+  }
+
+  .stats-number {
+    font-size: 1.25rem;
+  }
+
+  .productivity-rating-card {
+    padding: 0.75rem 1rem;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
   }
 }

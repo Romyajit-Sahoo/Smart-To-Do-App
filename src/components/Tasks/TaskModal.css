@@ -2,17 +2,21 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .form-row {
   display: flex;
   gap: 1rem;
+  width: 100%;
 }
 
 .flex-1 {
@@ -36,6 +40,7 @@
   color: var(--text-primary);
   font-size: 0.95rem;
   transition: all var(--transition-fast);
+  box-sizing: border-box;
 }
 
 .form-input:focus,
@@ -58,6 +63,7 @@
   border-radius: var(--radius-md);
   padding: 0.25rem;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .frequency-segment-btn {
@@ -71,6 +77,8 @@
   transition: all var(--transition-fast);
   background: transparent;
   border: none;
+  cursor: pointer;
+  min-height: 36px;
 }
 
 .frequency-segment-btn.active {
@@ -88,23 +96,26 @@
 .weekday-pills {
   display: flex;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.35rem;
   margin-top: 0.25rem;
+  width: 100%;
 }
 
 .weekday-pill-btn {
-  width: 40px;
-  height: 40px;
+  width: clamp(30px, 8.5vw, 40px);
+  height: clamp(30px, 8.5vw, 40px);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.875rem;
+  font-size: clamp(0.7rem, 2.2vw, 0.875rem);
   font-weight: 600;
   border: 1.5px solid var(--border-color);
   background-color: var(--bg-primary);
   color: var(--text-secondary);
   transition: all var(--transition-fast);
+  cursor: pointer;
+  padding: 0;
 }
 
 .weekday-pill-btn.active {
@@ -123,6 +134,7 @@
 .priority-pills {
   display: flex;
   gap: 0.75rem;
+  width: 100%;
 }
 
 .priority-pill {
@@ -137,6 +149,8 @@
   background-color: var(--bg-primary);
   color: var(--text-secondary);
   transition: all var(--transition-fast);
+  cursor: pointer;
+  min-height: 38px;
 }
 
 .priority-pill.active.pill-low {
@@ -166,6 +180,7 @@
 .tag-input-wrap {
   display: flex;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .add-tag-btn {
@@ -174,10 +189,12 @@
   justify-content: center;
   width: 44px;
   height: 44px;
+  min-width: 44px;
   background-color: var(--primary-light);
   color: var(--primary);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+  cursor: pointer;
 }
 
 .add-tag-btn:hover {
@@ -203,6 +220,7 @@
   padding: 0.25rem 0.625rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
+  word-break: break-word;
 }
 
 .remove-tag-btn {
@@ -212,6 +230,7 @@
   color: var(--text-tertiary);
   transition: color var(--transition-fast);
   padding: 0.125rem;
+  cursor: pointer;
 }
 
 .remove-tag-btn:hover {
@@ -226,6 +245,8 @@
   text-align: center;
   padding: 1rem 0.5rem;
   animation: scaleIn var(--transition-normal) ease-out;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .scope-icon-banner {
@@ -273,6 +294,8 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .btn-scope-option:hover {
@@ -332,6 +355,11 @@
   font-weight: 600;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+  cursor: pointer;
+  min-height: var(--touch-target-min, 44px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary {
@@ -358,16 +386,30 @@
 @media (max-width: 576px) {
   .form-row {
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
   }
   
   .weekday-pills {
-    gap: 0.25rem;
+    gap: 0.2rem;
   }
-  
-  .weekday-pill-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 0.75rem;
+
+  .priority-pills {
+    gap: 0.5rem;
+  }
+
+  .priority-pill {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 425px) {
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
   }
 }

@@ -22,6 +22,9 @@
   --sidebar-width-desktop: 280px;
   --sidebar-width-collapsed: 80px;
   --header-height: 72px;
+  --header-height-mobile: 60px;
+  --bottom-nav-height: 60px;
+  --touch-target-min: 44px;
 
   /* HSL Color components for dynamic calculations */
   --p-h: 250;

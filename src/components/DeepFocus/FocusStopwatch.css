@@ -4,15 +4,23 @@
   align-items: center;
   padding: 2.5rem 2rem;
   gap: 2rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .stopwatch-display {
-  font-size: 5rem;
+  font-size: clamp(2.2rem, 8vw, 6rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 2px;
+  letter-spacing: clamp(1px, 0.5vw, 2px);
   color: var(--text-primary);
   transition: color 0.3s ease;
+  white-space: nowrap;
+  text-align: center;
+  max-width: 100%;
+  line-height: 1.1;
 }
 
 .stopwatch-display.running {
@@ -29,13 +37,17 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .sw-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 1rem 2rem;
+  padding: 0.875rem 2rem;
   border-radius: var(--radius-full);
   font-size: 1.1rem;
   font-weight: 600;
@@ -43,11 +55,16 @@
   cursor: pointer;
   transition: all 0.2s;
   color: white;
+  min-height: var(--touch-target-min, 44px);
 }
 
 .sw-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sw-btn:active {
+  transform: scale(0.96);
 }
 
 .sw-start, .sw-resume {
@@ -77,7 +94,7 @@
 .sw-reset {
   background: rgba(255, 255, 255, 0.1);
   color: var(--text-secondary);
-  padding: 1rem;
+  padding: 0.875rem 1.25rem;
 }
 
 .sw-reset:hover {
@@ -89,4 +106,48 @@
   0% { opacity: 1; }
   50% { opacity: 0.7; }
   100% { opacity: 1; }
+}
+
+/* Responsive Overrides */
+@media (min-width: 1024px) {
+  .stopwatch-display {
+    font-size: 6rem;
+  }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .stopwatch-display {
+    font-size: 4rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .focus-stopwatch-container {
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+  }
+
+  .stopwatch-display {
+    font-size: clamp(2rem, 9.5vw, 3rem);
+  }
+
+  .sw-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .stopwatch-display {
+    font-size: 1.85rem;
+  }
+
+  .sw-btn {
+    padding: 0.625rem 1.125rem;
+    font-size: 0.9rem;
+  }
+
+  .stopwatch-controls {
+    gap: 0.5rem;
+  }
 }

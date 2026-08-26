@@ -1,14 +1,19 @@
 .focus-goal-card {
-  padding: 1.5rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .focus-goal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .focus-goal-title {
@@ -26,15 +31,17 @@
 
 .goal-icon {
   color: var(--primary);
+  flex-shrink: 0;
 }
 
 .focus-goal-value {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--primary);
   background: rgba(99, 102, 241, 0.1);
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-full);
+  white-space: nowrap;
 }
 
 .focus-goal-body {
@@ -48,6 +55,8 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.9rem;
+  flex-wrap: wrap;
+  gap: 0.25rem;
 }
 
 .goal-progress-text {

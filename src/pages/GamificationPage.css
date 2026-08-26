@@ -1,9 +1,15 @@
 .gamification-page {
   animation: fadeIn 0.4s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .gamification-page header {
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 /* HERO SECTION */
@@ -13,9 +19,11 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  padding: 2.5rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
   color: white;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
@@ -37,6 +45,7 @@
 .hero-content {
   position: relative;
   z-index: 1;
+  min-width: 0;
 }
 
 .hero-rank {
@@ -48,20 +57,23 @@
 }
 
 .hero-title {
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
   font-weight: 800;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   line-height: 1.2;
+  word-break: break-word;
 }
 
 .motivation-text {
-  font-size: 1rem;
+  font-size: 0.95rem;
   opacity: 0.9;
   background: rgba(255, 255, 255, 0.2);
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-md);
   display: inline-block;
   backdrop-filter: blur(4px);
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .hero-stats {
@@ -69,26 +81,28 @@
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
   background: rgba(0, 0, 0, 0.2);
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
   border-radius: var(--radius-lg);
   backdrop-filter: blur(8px);
+  box-sizing: border-box;
 }
 
 .level-ring {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .level-ring svg {
   transform: rotate(-90deg);
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
 }
 
 .level-ring circle {
@@ -103,7 +117,7 @@
 
 .level-ring .progress {
   stroke: white;
-  stroke-dasharray: 264; /* 2 * pi * r (r=42) */
+  stroke-dasharray: 264;
   transition: stroke-dashoffset 1s ease-out;
 }
 
@@ -114,37 +128,41 @@
 
 .level-number span {
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
   opacity: 0.8;
 }
 
 .level-number strong {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   line-height: 1;
 }
 
 .xp-details {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  min-width: 0;
 }
 
 .xp-total {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .xp-next {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   opacity: 0.8;
+  white-space: nowrap;
 }
 
 /* GRID LAYOUTS */
 .gamification-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 1.5rem;
+  width: 100%;
 }
 
 @media (min-width: 1024px) {
@@ -158,20 +176,21 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   color: var(--text-primary);
 }
 
 .section-header h3 {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 600;
 }
 
 /* BADGES */
 .badges-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 90px), 1fr));
+  gap: 1rem;
+  width: 100%;
 }
 
 .badge-card {
@@ -179,27 +198,29 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 0.75rem;
-  padding: 1rem;
+  gap: 0.5rem;
+  padding: 0.875rem 0.5rem;
   border-radius: var(--radius-lg);
-  background: var(--surface-bg);
+  background: var(--surface);
   border: 1px solid var(--border-color);
   transition: transform 0.2s;
+  box-sizing: border-box;
 }
 
 .badge-card.unlocked:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
 }
 
 .badge-icon-wrapper {
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   transition: all 0.3s;
+  flex-shrink: 0;
 }
 
 .badge-card.locked {
@@ -213,33 +234,38 @@
 }
 
 .badge-name {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-primary);
+  word-break: break-word;
 }
 
 .badge-desc {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-tertiary);
+  word-break: break-word;
 }
 
 /* ACHIEVEMENTS */
 .achievements-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.875rem;
+  width: 100%;
 }
 
 .achievement-item {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  padding: 1.25rem;
+  gap: 1rem;
+  padding: 1rem;
   border-radius: var(--radius-lg);
-  background: var(--surface-bg);
+  background: var(--surface);
   border: 1px solid var(--border-color);
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .achievement-item.unlocked {
@@ -248,8 +274,8 @@
 }
 
 .achievement-icon {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -269,6 +295,7 @@
 
 .achievement-info {
   flex: 1;
+  min-width: 0;
 }
 
 .achievement-title {
@@ -278,20 +305,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.925rem;
 }
 
 .achievement-xp {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--primary);
-  background: var(--background);
-  padding: 0.2rem 0.5rem;
+  background: var(--bg-primary);
+  padding: 0.15rem 0.45rem;
   border-radius: 12px;
+  white-space: nowrap;
 }
 
 .achievement-desc {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+  word-break: break-word;
 }
 
 .achievement-progress-bar {
@@ -312,47 +344,74 @@
 .reward-timeline {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
   max-height: 400px;
   overflow-y: auto;
-  padding-right: 0.5rem;
+  width: 100%;
 }
 
 .reward-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
-  background: var(--surface-bg);
+  padding: 0.875rem;
+  background: var(--surface);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .reward-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .reward-icon {
   color: var(--primary);
   background: var(--primary-light);
-  padding: 0.5rem;
+  padding: 0.4rem;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .reward-title {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-primary);
   font-weight: 500;
+  word-break: break-word;
 }
 
 .reward-date {
-  font-size: 0.75rem;
+  font-size: 0.725rem;
   color: var(--text-tertiary);
 }
 
 .reward-xp {
   font-weight: 700;
+  font-size: 0.85rem;
   color: var(--success);
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .hero-stats {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .xp-details {
+    align-items: center;
+  }
 }

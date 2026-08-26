@@ -257,8 +257,9 @@ export const FocusSessionPage = () => {
             onTaskComplete={handleTaskComplete} 
           />
           
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', margin: '2rem 0 1rem 0' }}>
+          <div className="timer-mode-toggle-group" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', margin: '2rem 0 1rem 0', flexWrap: 'wrap' }}>
             <button 
+              className={`timer-mode-toggle-btn ${timerMode === 'stopwatch' ? 'active' : ''}`}
               onClick={() => setTimerMode('stopwatch')}
               style={{ 
                 padding: '0.6rem 1.5rem', 
@@ -276,6 +277,7 @@ export const FocusSessionPage = () => {
               Stopwatch Mode
             </button>
             <button 
+              className={`timer-mode-toggle-btn ${timerMode === 'countdown' ? 'active' : ''}`}
               onClick={() => setTimerMode('countdown')}
               style={{ 
                 padding: '0.6rem 1.5rem', 

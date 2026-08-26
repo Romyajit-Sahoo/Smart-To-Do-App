@@ -3,15 +3,19 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-/* NAVIGATION NAVIGATION BAR TOOLBAR */
+/* NAVIGATION NAVBAR TOOLBAR */
 .calendar-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.5rem;
+  width: 100%;
 }
 
 .toolbar-left {
@@ -41,6 +45,8 @@
   transition: all var(--transition-fast);
   background: transparent;
   border: none;
+  cursor: pointer;
+  min-height: 36px;
 }
 
 .view-toggle-btn.active {
@@ -62,6 +68,11 @@
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   transition: all var(--transition-fast);
+  cursor: pointer;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .jump-today-btn:hover {
@@ -73,7 +84,7 @@
 .month-navigator {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   background-color: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -84,13 +95,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   transition: all var(--transition-fast);
   background: transparent;
   border: none;
+  cursor: pointer;
 }
 
 .nav-arrow-btn:hover {
@@ -104,6 +117,7 @@
   min-width: 140px;
   text-align: center;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 /* VIEWPORT 1: MONTHLY CALENDAR GRID */
@@ -115,13 +129,18 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .weekday-header-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.75rem;
+  width: 100%;
 }
 
 .weekday-header-cell {
@@ -131,13 +150,18 @@
   text-transform: uppercase;
   color: var(--text-secondary);
   letter-spacing: 0.05em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .month-days-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.5rem;
   min-height: 480px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .calendar-day-cell {
@@ -151,6 +175,11 @@
   transition: all var(--transition-fast);
   text-align: left;
   aspect-ratio: 1.2;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  overflow: hidden;
 }
 
 .calendar-day-cell:hover {
@@ -174,6 +203,7 @@
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
+  line-height: 1;
 }
 
 .today-dot {
@@ -182,11 +212,12 @@
   background-color: var(--primary);
   border-radius: var(--radius-full);
   display: block;
+  flex-shrink: 0;
 }
 
 .calendar-day-cell.is-today {
   border-color: var(--primary) !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
   background-color: var(--surface) !important;
 }
 
@@ -194,19 +225,26 @@
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
+  min-width: 0;
 }
 
 .cell-stats-percent {
   font-size: 0.85rem;
   font-weight: 700;
   line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cell-stats-ratio {
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* CELL COLOR PERFORMANCE CODES */
@@ -254,6 +292,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .timeline-filter-card {
@@ -265,6 +305,8 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   gap: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .timeline-search-wrap {
@@ -278,6 +320,7 @@
   height: 40px;
   flex: 1.5;
   transition: all var(--transition-fast);
+  min-width: 0;
 }
 
 .timeline-search-wrap:focus-within {
@@ -297,6 +340,7 @@
   flex-direction: column;
   gap: 0.25rem;
   flex: 1;
+  min-width: 0;
 }
 
 .filter-title-label {
@@ -316,6 +360,7 @@
   font-size: 0.85rem;
   font-weight: 500;
   outline: none;
+  width: 100%;
 }
 
 /* Timeline card records layout */
@@ -323,6 +368,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  width: 100%;
 }
 
 .timeline-card {
@@ -334,6 +380,8 @@
   flex-direction: column;
   gap: 0.875rem;
   transition: border-color var(--transition-fast);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .timeline-card.border-green { border-left: 4px solid var(--success); }
@@ -355,6 +403,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .timeline-date-label {
@@ -369,12 +418,14 @@
   border: 1px solid var(--border-color);
   padding: 0.125rem 0.5rem;
   border-radius: var(--radius-full);
+  white-space: nowrap;
 }
 
 .timeline-header-right {
   display: flex;
   align-items: center;
   gap: 1.25rem;
+  flex-wrap: wrap;
 }
 
 .timeline-completion-summary {
@@ -402,6 +453,8 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
+  cursor: pointer;
+  min-height: 36px;
 }
 
 .timeline-action-btn:hover {
@@ -416,6 +469,7 @@
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   border-left: 3px solid var(--primary);
+  word-break: break-word;
 }
 
 /* Nested task timeline lists */
@@ -433,13 +487,17 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.825rem;
-  padding: 0.125rem 0;
+  padding: 0.25rem 0;
+  flex-wrap: wrap;
+  gap: 0.375rem;
 }
 
 .nested-task-title-wrap {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .task-status-dot {
@@ -447,11 +505,16 @@
   height: 8px;
   border-radius: 50%;
   display: block;
+  flex-shrink: 0;
 }
 
 .task-status-dot.done { background-color: var(--success); }
 .task-status-dot.pending { background-color: var(--primary); }
 .task-status-dot.missed { background-color: var(--danger); }
+
+.nested-task-title {
+  word-break: break-word;
+}
 
 .nested-task-title.completed-strike {
   text-decoration: line-through;
@@ -461,7 +524,8 @@
 .nested-task-meta {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .meta-text {
@@ -506,10 +570,9 @@
   gap: 1.5rem;
 }
 
-/* Modal Statistics Bubbles */
 .day-details-stats-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 0.75rem;
 }
 
@@ -522,12 +585,14 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   text-align: center;
+  min-width: 0;
 }
 
 .bubble-val {
   font-size: 1.15rem;
   font-weight: 800;
   color: var(--text-primary);
+  max-width: 100%;
 }
 
 .bubble-lbl {
@@ -554,7 +619,6 @@
   padding-bottom: 0.375rem;
 }
 
-/* Scheduled tasks inside modal list */
 .modal-tasks-list {
   display: flex;
   flex-direction: column;
@@ -579,6 +643,7 @@
   flex-direction: column;
   gap: 0.25rem;
   flex: 1;
+  min-width: 0;
 }
 
 .modal-task-title-line {
@@ -591,6 +656,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .task-indicator-icon-wrap.check { color: var(--success); }
@@ -612,6 +678,7 @@
 .modal-task-sub-tags {
   display: flex;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .modal-tag-item {
@@ -628,6 +695,7 @@
   align-items: flex-end;
   font-size: 0.75rem;
   color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
 .modal-task-time {
@@ -642,7 +710,6 @@
   padding: 1.5rem;
 }
 
-/* Journal logs styling */
 .modal-journal-box {
   display: flex;
   flex-direction: column;
@@ -665,6 +732,8 @@
   border: 1.5px solid var(--border-color);
   color: var(--text-secondary);
   transition: all var(--transition-fast);
+  cursor: pointer;
+  min-height: 38px;
 }
 
 .mood-pill-btn:hover {
@@ -698,38 +767,155 @@
 }
 
 @media (max-width: 768px) {
-  .calendar-day-cell {
-    padding: 0.375rem;
-    min-height: 64px;
-    aspect-ratio: 1.1;
+  .calendar-page {
+    gap: 1rem;
   }
-  
-  .day-number-label {
-    font-size: 0.8rem;
-  }
-  
-  .cell-stats-percent {
-    font-size: 0.7rem;
-  }
-  
-  .cell-stats-ratio {
-    display: none; /* Hide fraction ratio on mobile cell grids */
-  }
-  
+
   .calendar-toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
   }
-  
+
+  .toolbar-left {
+    justify-content: space-between;
+    width: 100%;
+  }
+
   .month-navigator {
     justify-content: space-between;
+    width: 100%;
   }
-  
+
+  .current-month-label {
+    font-size: 1rem;
+    min-width: auto;
+  }
+
+  .calendar-view-container {
+    padding: 0.75rem 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .weekday-header-grid {
+    padding-bottom: 0.5rem;
+  }
+
   .weekday-header-cell {
     font-size: 0.7rem;
   }
+
+  .month-days-grid {
+    gap: 3px;
+    min-height: auto;
+  }
+
+  .calendar-day-cell {
+    padding: 4px 3px;
+    min-height: 48px;
+    aspect-ratio: auto;
+    border-radius: var(--radius-sm);
+  }
   
+  .day-number-label {
+    font-size: clamp(0.7rem, 2.4vw, 0.85rem);
+  }
+
+  .today-dot {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .cell-stats-percent {
+    font-size: clamp(0.55rem, 1.9vw, 0.725rem);
+  }
+  
+  .cell-stats-ratio {
+    display: none;
+  }
+
+  .day-cell-focus {
+    font-size: 0.55rem !important;
+    line-height: 1;
+  }
+
+  .timeline-filter-card {
+    padding: 1rem;
+  }
+
+  .timeline-header-right {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .timeline-completion-summary {
+    text-align: left;
+  }
+
   .day-details-stats-section {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 425px) {
+  .calendar-view-container {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .month-days-grid {
+    gap: 2px;
+  }
+
+  .calendar-day-cell {
+    padding: 3px 2px;
+    min-height: 44px;
+  }
+
+  .weekday-header-cell {
+    font-size: 0.625rem;
+  }
+
+  .timeline-filters-grid {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mood-pill-btn {
+    padding: 0.35rem 0.625rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .calendar-view-container {
+    padding: 0.375rem 0.15rem;
+  }
+
+  .calendar-day-cell {
+    padding: 2px 1px;
+    min-height: 40px;
+  }
+
+  .day-number-label {
+    font-size: 0.65rem;
+  }
+
+  .cell-stats-percent {
+    font-size: 0.525rem;
+  }
+
+  .weekday-header-cell {
+    font-size: 0.575rem;
+  }
+
+  .view-toggle-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .jump-today-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
   }
 }

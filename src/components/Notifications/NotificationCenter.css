@@ -468,13 +468,22 @@
 }
 
 /* RESPONSIVE LAYOUT FOR MOBILE PANELS */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .notification-panel {
     position: fixed;
-    top: var(--header-height);
+    top: calc(var(--header-height-mobile, 60px) + 8px);
     left: 12px;
     right: 12px;
     width: auto;
-    max-height: 420px;
+    max-width: calc(100vw - 24px);
+    max-height: 80vh;
+  }
+}
+
+@media (max-width: 360px) {
+  .notification-panel {
+    left: 6px;
+    right: 6px;
+    max-width: calc(100vw - 12px);
   }
 }

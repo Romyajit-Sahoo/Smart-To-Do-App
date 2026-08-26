@@ -5,6 +5,10 @@
   gap: 1rem;
   min-height: 200px;
   transition: all 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .cft-empty-state {
@@ -30,12 +34,14 @@
 .cft-empty-state h3 {
   margin: 0;
   font-size: 1.25rem;
+  word-break: break-word;
 }
 
 .cft-empty-state p {
   color: var(--text-secondary);
   font-size: 0.9rem;
   margin: 0.5rem 0 1.5rem 0;
+  word-break: break-word;
 }
 
 .cft-select-btn {
@@ -47,6 +53,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  min-height: var(--touch-target-min, 44px);
 }
 
 .cft-select-btn:hover {
@@ -59,6 +66,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .cft-label {
@@ -77,6 +86,7 @@
   padding: 0.25rem 0.6rem;
   border-radius: var(--radius-full);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .task-badge {
@@ -90,14 +100,16 @@
 }
 
 .cft-title {
-  font-size: 1.5rem;
+  font-size: clamp(1.15rem, 3.5vw, 1.5rem);
   margin: 0;
   color: var(--text-primary);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .cft-details {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
@@ -107,6 +119,7 @@
   background: rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-md);
   color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .cft-priority {
@@ -114,6 +127,7 @@
   padding: 0.2rem 0.6rem;
   border-radius: var(--radius-md);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .priority-high { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
@@ -135,6 +149,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  min-height: var(--touch-target-min, 44px);
 }
 
 .cft-complete-btn:hover {
@@ -164,6 +179,7 @@
   color: var(--text-tertiary);
   cursor: pointer;
   font-size: 0.9rem;
+  padding: 0.375rem;
 }
 
 .cft-close-btn:hover {
@@ -176,6 +192,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
+  overflow-x: auto;
 }
 
 .cft-tab {
@@ -187,6 +204,8 @@
   font-weight: 500;
   border-radius: var(--radius-md);
   transition: all 0.2s;
+  white-space: nowrap;
+  min-height: 38px;
 }
 
 .cft-tab.active {
@@ -211,6 +230,7 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s;
+  min-height: var(--touch-target-min, 44px);
 }
 
 .cft-list-item:hover {
@@ -219,6 +239,7 @@
 
 .cft-list-icon {
   color: var(--text-tertiary);
+  flex-shrink: 0;
 }
 
 .cft-list-icon.habit {
@@ -229,11 +250,14 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .cft-list-title {
   font-size: 0.95rem;
   font-weight: 500;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .cft-list-cat {
@@ -246,4 +270,10 @@
   padding: 2rem;
   color: var(--text-tertiary);
   font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .current-focus-task-card {
+    padding: 1.25rem 1rem;
+  }
 }

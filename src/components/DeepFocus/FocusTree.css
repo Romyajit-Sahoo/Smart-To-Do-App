@@ -5,7 +5,11 @@
   justify-content: space-between;
   padding: 2rem;
   height: 100%;
-  min-height: 250px;
+  min-height: 240px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .focus-tree-container.empty {
@@ -24,7 +28,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  min-height: 110px;
+  overflow: hidden;
 }
 
 .tree-icon-wrapper {
@@ -33,18 +40,28 @@
   justify-content: center;
   color: #10b981;
   transition: all 1s ease-in-out;
+  max-width: 100%;
+}
+
+.tree-icon-wrapper svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 .seed-dot {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   background: #10b981;
   border-radius: 50%;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
 .full-tree {
   color: #059669;
   filter: drop-shadow(0 10px 15px rgba(16, 185, 129, 0.3));
+  max-height: 96px;
+  width: auto;
 }
 
 /* Animations based on state */
@@ -98,4 +115,21 @@
 .tree-progress-text {
   font-size: 0.8rem;
   color: var(--text-tertiary);
+}
+
+@media (max-width: 768px) {
+  .focus-tree-container {
+    padding: 1.25rem 1rem;
+    min-height: 190px;
+    height: auto;
+  }
+
+  .tree-visual-area {
+    min-height: 90px;
+    margin-bottom: 1rem;
+  }
+
+  .full-tree {
+    max-height: 76px;
+  }
 }
