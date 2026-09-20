@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import { createContext, useContext, useEffect, useRef } from 'react';
 import { useApp } from './AppContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { 
@@ -12,7 +12,7 @@ import {
 const GamificationContext = createContext();
 
 export const GamificationProvider = ({ children }) => {
-  const { tasks, dailyRecords, getLocalDateString, triggerNotification } = useApp();
+  const { tasks, triggerNotification } = useApp();
 
   // --- PERSISTENT GAMIFICATION STATES ---
   const [xp, setXp] = useLocalStorage('gamification_xp', 0);
@@ -37,7 +37,7 @@ export const GamificationProvider = ({ children }) => {
     setXp(prev => prev + amount);
     
     const rewardLog = {
-      id: `rew_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `rew_${crypto.randomUUID()}`,
       amount,
       title,
       sourceId,
@@ -58,7 +58,6 @@ export const GamificationProvider = ({ children }) => {
 
   // --- OBSERVATION ENGINE ---
   const prevTasksRef = useRef(null);
-  const prevDailyRecordsRef = useRef(null);
   const currentLevelRef = useRef(levelProgress.level);
 
   // Level Up Listener
@@ -87,6 +86,7 @@ export const GamificationProvider = ({ children }) => {
         triggerNotification("Badge Earned!", `You earned the ${badge.name} badge!`, "completed");
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stats, xp]);
 
   // Tasks Observer
@@ -109,11 +109,16 @@ export const GamificationProvider = ({ children }) => {
         if (task.priority === 'low') xpAmount = XP_AWARDS.TASK_LOW;
 
         awardXP(xpAmount, `Completed: ${task.title}`, task.id);
+
+        if (task.isHabit) {
+          awardXP(XP_AWARDS.HABIT_DAILY, `Completed habit: ${task.title}`, `habit_${task.id}`);
+        }
         
         setStats(prev => ({
           ...prev,
           totalTasksCompleted: prev.totalTasksCompleted + 1,
           highPriorityCompleted: task.priority === 'high' ? prev.highPriorityCompleted + 1 : prev.highPriorityCompleted,
+          totalHabitsCompleted: task.isHabit ? prev.totalHabitsCompleted + 1 : prev.totalHabitsCompleted,
         }));
       });
     }
@@ -121,52 +126,22 @@ export const GamificationProvider = ({ children }) => {
     if (newlyUncompleted.length > 0) {
       newlyUncompleted.forEach(task => {
         revokeXP(task.id);
+        if (task.isHabit) {
+          revokeXP(`habit_${task.id}`);
+        }
         
         setStats(prev => ({
           ...prev,
           totalTasksCompleted: Math.max(0, prev.totalTasksCompleted - 1),
           highPriorityCompleted: task.priority === 'high' ? Math.max(0, prev.highPriorityCompleted - 1) : prev.highPriorityCompleted,
+          totalHabitsCompleted: task.isHabit ? Math.max(0, prev.totalHabitsCompleted - 1) : prev.totalHabitsCompleted,
         }));
       });
     }
 
     prevTasksRef.current = tasks;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tasks]);
-
-  // Habits Observer
-  useEffect(() => {
-    if (!prevDailyRecordsRef.current) {
-      prevDailyRecordsRef.current = dailyRecords;
-      return;
-    }
-
-    const todayStr = getLocalDateString();
-    const todayRecords = dailyRecords[todayStr] || {};
-    const prevTodayRecords = prevDailyRecordsRef.current[todayStr] || {};
-
-    const habitIds = Object.keys(todayRecords);
-    
-    habitIds.forEach(habitId => {
-      const isCompleted = todayRecords[habitId];
-      const wasCompleted = prevTodayRecords[habitId];
-
-      if (isCompleted && !wasCompleted) {
-        awardXP(XP_AWARDS.HABIT_DAILY, 'Completed a habit', `habit_${todayStr}_${habitId}`);
-        setStats(prev => ({
-          ...prev,
-          totalHabitsCompleted: prev.totalHabitsCompleted + 1
-        }));
-      } else if (!isCompleted && wasCompleted) {
-        revokeXP(`habit_${todayStr}_${habitId}`);
-        setStats(prev => ({
-          ...prev,
-          totalHabitsCompleted: Math.max(0, prev.totalHabitsCompleted - 1)
-        }));
-      }
-    });
-
-    prevDailyRecordsRef.current = dailyRecords;
-  }, [dailyRecords, getLocalDateString]);
 
   // Context value definition
   const value = {
@@ -187,6 +162,7 @@ export const GamificationProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useGamification = () => {
   const context = useContext(GamificationContext);
   if (!context) {

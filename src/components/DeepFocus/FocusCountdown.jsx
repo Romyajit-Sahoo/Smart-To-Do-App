@@ -1,58 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Play, Pause, Square, RotateCcw } from 'lucide-react';
 import './FocusCountdown.css';
 
-export const FocusCountdown = ({ onSessionStop }) => {
+export const FocusCountdown = ({ onSessionStop, elapsed = 0 }) => {
   const { runningFocusSession, setRunningFocusSession, setFocusDistractions, saveFocusSession, getLocalDateString, triggerNotification } = useApp();
   
-  // Local state for UI updates
-  const [remaining, setRemaining] = useState(0);
   const [customMinutes, setCustomMinutes] = useState('');
   
   // Timer mode state to distinguish from stopwatch
   const isCountdownMode = runningFocusSession?.mode === 'countdown';
   const targetDuration = runningFocusSession?.targetDuration || 0; // in seconds
+  const remaining = isCountdownMode ? Math.max(0, targetDuration - elapsed) : 0;
 
-  const alarmAudio = useRef(null);
-
-  useEffect(() => {
-    // Initialize audio
-    alarmAudio.current = new Audio('/alarm.mp3'); // We'll just use a standard sound or beep
-  }, []);
-
-  // Sync remaining time from global state
-  useEffect(() => {
-    let interval;
-    if (isCountdownMode && runningFocusSession.status === 'running') {
-      interval = setInterval(() => {
-        const now = Date.now();
-        const sessionStart = new Date(runningFocusSession.startTime).getTime();
-        const pausedMs = runningFocusSession.totalPausedMs || 0;
-        const elapsed = Math.floor((now - sessionStart - pausedMs) / 1000);
-        const timeLeft = Math.max(0, targetDuration - elapsed);
-        
-        setRemaining(timeLeft);
-
-        if (timeLeft <= 0) {
-          clearInterval(interval);
-          handleAutoComplete();
-        }
-      }, 1000);
-    } else if (isCountdownMode && runningFocusSession.status === 'paused') {
-      const sessionStart = new Date(runningFocusSession.startTime).getTime();
-      const pausedAt = new Date(runningFocusSession.lastPausedAt).getTime();
-      const pausedMs = runningFocusSession.totalPausedMs || 0;
-      const elapsed = Math.floor((pausedAt - sessionStart - pausedMs) / 1000);
-      setRemaining(Math.max(0, targetDuration - elapsed));
-    } else if (!isCountdownMode) {
-      setRemaining(0);
-    }
-
-    return () => clearInterval(interval);
-  }, [runningFocusSession, isCountdownMode, targetDuration]);
-
-  const playAlarm = () => {
+  const playAlarm = useCallback(() => {
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioCtx.createOscillator();
@@ -72,25 +33,32 @@ export const FocusCountdown = ({ onSessionStop }) => {
       oscillator.stop(audioCtx.currentTime + 0.3);
 
       setTimeout(() => {
-        const osc2 = audioCtx.createOscillator();
-        const gain2 = audioCtx.createGain();
-        osc2.connect(gain2);
-        gain2.connect(audioCtx.destination);
-        osc2.type = 'triangle';
-        osc2.frequency.setValueAtTime(800, audioCtx.currentTime);
-        osc2.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.3);
-        gain2.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        osc2.start();
-        osc2.stop(audioCtx.currentTime + 0.3);
+        try {
+          const osc2 = audioCtx.createOscillator();
+          const gain2 = audioCtx.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioCtx.destination);
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(800, audioCtx.currentTime);
+          osc2.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.3);
+          gain2.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+          osc2.start();
+          osc2.stop(audioCtx.currentTime + 0.3);
+          osc2.onended = () => {
+            audioCtx.close().catch(() => {});
+          };
+        } catch {
+          audioCtx.close().catch(() => {});
+        }
       }, 400);
 
     } catch (e) {
       console.log("AudioContext blocked or not supported:", e);
     }
-  };
+  }, []);
 
-  const handleAutoComplete = () => {
+  const handleAutoComplete = useCallback(() => {
     if (!runningFocusSession || runningFocusSession.status === 'idle') return;
 
     playAlarm();
@@ -98,7 +66,7 @@ export const FocusCountdown = ({ onSessionStop }) => {
 
     // Save session automatically
     saveFocusSession({
-      id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `session_${crypto.randomUUID()}`,
       startTime: runningFocusSession.startTime,
       endTime: new Date().toISOString(),
       duration: targetDuration,
@@ -122,7 +90,14 @@ export const FocusCountdown = ({ onSessionStop }) => {
     setFocusDistractions({
       pauseCount: 0, stopCount: 0, browserHiddenCount: 0, windowLostFocusCount: 0, idleTime: 0
     });
-  };
+  }, [runningFocusSession, playAlarm, triggerNotification, saveFocusSession, targetDuration, getLocalDateString, setRunningFocusSession, setFocusDistractions]);
+
+  // Auto-complete when remaining hits zero in active countdown
+  useEffect(() => {
+    if (isCountdownMode && runningFocusSession?.status === 'running' && remaining <= 0 && targetDuration > 0) {
+      handleAutoComplete();
+    }
+  }, [remaining, isCountdownMode, runningFocusSession?.status, targetDuration, handleAutoComplete]);
 
   const handleStart = (minutes) => {
     if (!runningFocusSession || !runningFocusSession.task) {
@@ -148,8 +123,6 @@ export const FocusCountdown = ({ onSessionStop }) => {
       windowLostFocusCount: 0,
       idleTime: 0
     });
-    
-    setRemaining(duration);
   };
 
   const handleCustomStart = (e) => {

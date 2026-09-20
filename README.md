@@ -231,8 +231,3 @@ npm run dev
 ## 📄 License
 
 This project is open source and available under the MIT License.
->>>>>>> 7a130c846158461f037d54f9dd730c90ebd39acd
-
-
-
-

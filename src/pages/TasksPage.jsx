@@ -1,17 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { TaskCard } from '../components/Tasks/TaskCard';
 import { TaskModal } from '../components/Tasks/TaskModal';
-import { Badge } from '../components/Common/Badge';
 import { PRIORITIES, SORT_OPTIONS } from '../constants/constants';
 import { 
   Plus, 
   SlidersHorizontal, 
-  Calendar, 
-  Trash2, 
-  PlusCircle, 
-  Layers, 
-  AlertTriangle,
   ArrowUpDown,
   SearchCheck
 } from 'lucide-react';
@@ -124,10 +118,11 @@ export const TasksPage = () => {
       switch (sortBy) {
         case SORT_OPTIONS.OLDEST:
           return new Date(a.createdDate) - new Date(b.createdDate);
-        case SORT_OPTIONS.PRIORITY:
+        case SORT_OPTIONS.PRIORITY: {
           const pA = PRIORITIES[a.priority]?.value || 0;
           const pB = PRIORITIES[b.priority]?.value || 0;
           return pB - pA; // High priority first
+        }
         case SORT_OPTIONS.DUE_DATE:
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;

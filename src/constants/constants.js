@@ -1,4 +1,16 @@
-// Static constants and settings config
+import { 
+  Briefcase, Code, BookOpen, Dumbbell, Heart, Book, User,
+  Flame, Zap, Coffee, Droplet, Activity, Smile, Star, Sun, Compass,
+  Medal, Target, Award, Trophy, Circle, Check, Crown, Layers, AlertCircle, Shield, RefreshCw, Repeat, Play, Gem,
+  Folder
+} from 'lucide-react';
+
+export const APP_ICONS = {
+  Briefcase, Code, BookOpen, Dumbbell, Heart, Book, User,
+  Flame, Zap, Coffee, Droplet, Activity, Smile, Star, Sun, Compass,
+  Medal, Target, Award, Trophy, Circle, Check, Crown, Layers, AlertCircle, Shield, RefreshCw, Repeat, Play, Gem,
+  Folder
+};
 
 export const DEFAULT_CATEGORIES = [
   { id: 'work', name: 'Work', icon: 'Briefcase', color: '#6366f1' },       // Indigo

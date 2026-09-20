@@ -1,13 +1,14 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   calculateTodayStats, 
   calculateProductivityScore, 
   calculateStreaks, 
   calculateQuickStats, 
-  getMotivationalMessage 
+  getMotivationalMessage,
+  formatTime,
+  formatRelativeTime
 } from '../utils/productivityUtils';
-import { Badge } from '../components/Common/Badge';
 import { 
   ListTodo, 
   CheckCircle2, 
@@ -15,18 +16,14 @@ import {
   AlertCircle, 
   CalendarRange, 
   Flame, 
-  TrendingUp, 
   Sparkles, 
   Activity,
-  Layers,
-  ChevronRight,
-  TrendingDown,
   Brain
 } from 'lucide-react';
 import './Dashboard.css';
 
 export const Dashboard = () => {
-  const { tasks, categories, activities, setActiveTab, getLocalDateString, focusSessions } = useApp();
+  const { tasks, categories, activities, getLocalDateString, focusSessions } = useApp();
 
   // 1. Calculate Greeting message
   const greeting = useMemo(() => {
@@ -53,25 +50,7 @@ export const Dashboard = () => {
   const quickStats = useMemo(() => calculateQuickStats(tasks, categories), [tasks, categories]);
   const motivator = useMemo(() => getMotivationalMessage(todayStats), [todayStats]);
 
-  // 3. Format Activity Relative Time
-  const formatRelativeTime = (timestampStr) => {
-    try {
-      const diffMs = Date.now() - new Date(timestampStr).getTime();
-      if (diffMs < 0) return 'just now'; // catch future clocks
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMins / 60);
 
-      if (diffMins < 1) return 'just now';
-      if (diffMins < 60) return `${diffMins}m ago`;
-      if (diffHours < 24) return `${diffHours}h ago`;
-      
-      const diffDays = Math.floor(diffHours / 24);
-      if (diffDays === 1) return 'Yesterday';
-      return `${diffDays} days ago`;
-    } catch {
-      return 'some time ago';
-    }
-  };
 
   // Focus Stats calculation
   const focusStats = useMemo(() => {
@@ -106,12 +85,7 @@ export const Dashboard = () => {
       }
     }
 
-    const formatTime = (seconds) => {
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      if (h > 0) return `${h}h ${m}m`;
-      return `${m}m`;
-    };
+
 
     return { 
       todayTime: formatTime(todayTime), 
@@ -364,24 +338,13 @@ export const Dashboard = () => {
             {activities.length > 0 ? (
               <div className="activity-timeline-list">
                 {activities.slice(0, 10).map((act) => {
-                  let actClass = '';
-                  let actBadgeText = '';
-                  if (act.type === 'completed') {
-                    actClass = 'act-completed';
-                    actBadgeText = 'completed';
-                  } else if (act.type === 'created') {
-                    actClass = 'act-created';
-                    actBadgeText = 'created';
-                  } else if (act.type === 'deleted') {
-                    actClass = 'act-deleted';
-                    actBadgeText = 'deleted';
-                  } else if (act.type === 'missed') {
-                    actClass = 'act-missed';
-                    actBadgeText = 'missed';
-                  } else {
-                    actClass = 'act-restore';
-                    actBadgeText = 'updated';
-                  }
+                  const actMap = {
+                    completed: { cls: 'act-completed', txt: 'completed' },
+                    created: { cls: 'act-created', txt: 'created' },
+                    deleted: { cls: 'act-deleted', txt: 'deleted' },
+                    missed: { cls: 'act-missed', txt: 'missed' },
+                  };
+                  const { cls: actClass, txt: actBadgeText } = actMap[act.type] || { cls: 'act-restore', txt: 'updated' };
 
                   return (
                     <div key={act.id} className="timeline-item">

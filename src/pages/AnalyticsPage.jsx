@@ -1,42 +1,36 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   calculateTodayStats, 
   calculateProductivityScore, 
   calculateStreaks, 
-  calculateTrendData,
-  calculateWeekdayPerformance,
-  calculateWeeklyMonthlyMilestones,
-  calculateCategoryPerformance,
-  calculatePriorityBreakdown,
-  calculateHabitConsistency,
-  generateSmartInsights
+  calculateTrendData, 
+  calculateWeekdayPerformance, 
+  calculateWeeklyMonthlyMilestones, 
+  calculateCategoryPerformance, 
+  calculatePriorityBreakdown, 
+  calculateHabitConsistency, 
+  generateSmartInsights,
+  formatTime
 } from '../utils/productivityUtils';
-import { Badge } from '../components/Common/Badge';
 import { 
   Download, 
-  TrendingUp, 
-  BarChart2, 
-  Calendar, 
   Flame, 
   Activity, 
   Filter, 
   Sparkles, 
   AlertCircle, 
-  CheckCircle,
-  HelpCircle,
-  Clock,
-  Briefcase,
-  Layers,
-  ChevronRight,
-  TrendingDown,
-  Brain
+  CheckCircle, 
+  HelpCircle, 
+  Clock, 
+  Layers, 
+  Brain 
 } from 'lucide-react';
 import { FocusAnalytics } from '../components/DeepFocus/FocusAnalytics';
 import './AnalyticsPage.css';
 
 export const AnalyticsPage = () => {
-  const { tasks, categories, getLocalDateString, focusSessions } = useApp();
+  const { tasks, categories, focusSessions } = useApp();
 
   // Local state scopes
   const [trendDays, setTrendDays] = useState(7); // 7 | 30 | 90
@@ -78,13 +72,6 @@ export const AnalyticsPage = () => {
     }).length;
   }, [filteredTasks]);
 
-  const missedDaysCount = useMemo(() => {
-    const uniqueDates = Array.from(new Set(filteredTasks.map(t => t.dueDate).filter(Boolean)));
-    return uniqueDates.filter(dateStr => {
-      return filteredTasks.some(t => t.dueDate === dateStr && t.missed);
-    }).length;
-  }, [filteredTasks]);
-
   // Focus specific insights
   const focusInsights = useMemo(() => {
     const totalTime = focusSessions.reduce((acc, s) => acc + s.duration, 0);
@@ -106,13 +93,6 @@ export const AnalyticsPage = () => {
     }
     const mostProductiveHour = maxHour >= 0 ? `${maxHour}:00 - ${parseInt(maxHour)+1}:00` : 'Not enough data';
 
-    const formatTime = (seconds) => {
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      if (h > 0) return `${h}h ${m}m`;
-      return `${m}m`;
-    };
-
     return {
       totalTime: formatTime(totalTime),
       mostProductiveHour
@@ -121,27 +101,27 @@ export const AnalyticsPage = () => {
 
   // 1. Export CSV Handler
   const handleExportCSV = () => {
-    // Collect all dates
     const uniqueDates = Array.from(new Set(filteredTasks.map(t => t.dueDate).filter(Boolean))).sort();
     
-    let csvContent = 'data:text/csv;charset=utf-8,';
-    csvContent += 'Date,Total Tasks,Completed Tasks,Completion Rate %\n';
-    
+    const rows = [['Date', 'Total Tasks', 'Completed Tasks', 'Completion Rate %']];
     uniqueDates.forEach(dateStr => {
       const dayTasks = filteredTasks.filter(t => t.dueDate === dateStr);
       const total = dayTasks.length;
       const completed = dayTasks.filter(t => t.completed).length;
       const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-      csvContent += `${dateStr},${total},${completed},${rate}\n`;
+      rows.push([dateStr, total, completed, `${rate}%`]);
     });
 
-    const encodedUri = encodeURI(csvContent);
+    const csvText = rows.map(r => r.map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
+    link.setAttribute('href', url);
     link.setAttribute('download', `focusflow_productivity_report_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // 2. Export JSON Handler

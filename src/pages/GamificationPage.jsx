@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useGamification } from '../context/GamificationContext';
 import { ACHIEVEMENTS, BADGES, BADGE_TIERS, generateMotivationMessage } from '../utils/gamificationUtils';
-import * as Icons from 'lucide-react';
+import { Medal, Target, Award, BarChart2, History, Star, Circle } from 'lucide-react';
+import { APP_ICONS } from '../constants/constants';
 import './GamificationPage.css';
 
 export const GamificationPage = () => {
@@ -66,7 +67,7 @@ export const GamificationPage = () => {
         <div className="gamification-main">
           
           <div className="section-header">
-            <Icons.Medal size={24} />
+            <Medal size={24} />
             <h3>Badge Collection</h3>
           </div>
           
@@ -74,7 +75,7 @@ export const GamificationPage = () => {
             {BADGES.map((badge) => {
               const isUnlocked = unlockedBadges.includes(badge.id);
               const tierData = BADGE_TIERS[badge.tier];
-              const Icon = Icons[badge.icon] || Icons.Circle;
+              const Icon = APP_ICONS[badge.icon] || Circle;
               
               return (
                 <div key={badge.id} className={`badge-card ${isUnlocked ? 'unlocked' : 'locked'}`} title={badge.conditionDesc}>
@@ -95,14 +96,14 @@ export const GamificationPage = () => {
           </div>
 
           <div className="section-header">
-            <Icons.Target size={24} />
+            <Target size={24} />
             <h3>Achievements</h3>
           </div>
 
           <div className="achievements-list">
             {ACHIEVEMENTS.map(ach => {
               const isUnlocked = unlockedAchievements.includes(ach.id);
-              const Icon = Icons[ach.icon] || Icons.Award;
+              const Icon = APP_ICONS[ach.icon] || Award;
               
               let currentProgress = 0;
               if (ach.type === 'tasks') currentProgress = stats.totalTasksCompleted || 0;
@@ -147,7 +148,7 @@ export const GamificationPage = () => {
         <div className="gamification-sidebar">
           
           <div className="section-header">
-            <Icons.BarChart2 size={24} />
+            <BarChart2 size={24} />
             <h3>Career Stats</h3>
           </div>
           
@@ -175,7 +176,7 @@ export const GamificationPage = () => {
           </div>
 
           <div className="section-header">
-            <Icons.History size={24} />
+            <History size={24} />
             <h3>Recent Rewards</h3>
           </div>
           
@@ -188,7 +189,7 @@ export const GamificationPage = () => {
               rewardHistory.map(log => (
                 <div key={log.id} className="reward-item">
                   <div className="reward-info">
-                    <div className="reward-icon"><Icons.Star size={16} /></div>
+                    <div className="reward-icon"><Star size={16} /></div>
                     <div>
                       <div className="reward-title">{log.title}</div>
                       <div className="reward-date">

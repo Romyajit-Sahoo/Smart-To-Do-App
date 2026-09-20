@@ -1,4 +1,3 @@
-import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { Sun, Moon, Search } from 'lucide-react';
 import { NotificationCenter } from '../Notifications/NotificationCenter';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Badge } from '../Common/Badge';
 import { 
@@ -7,31 +7,12 @@ import {
   Edit3, 
   Trash2, 
   Check, 
-  Briefcase, 
-  Code, 
-  BookOpen, 
-  Dumbbell, 
-  Heart, 
-  Book, 
-  User, 
   Folder,
   AlertCircle,
   RefreshCw
 } from 'lucide-react';
+import { APP_ICONS } from '../../constants/constants';
 import './TaskCard.css';
-
-const getIcon = (iconName) => {
-  const iconMap = {
-    Briefcase: Briefcase,
-    Code: Code,
-    BookOpen: BookOpen,
-    Dumbbell: Dumbbell,
-    Heart: Heart,
-    Book: Book,
-    User: User,
-  };
-  return iconMap[iconName] || Folder;
-};
 
 export const TaskCard = ({ task, onEdit }) => {
   const { toggleTaskCompletion, deleteTask, duplicateTask, categories, getLocalDateString } = useApp();
@@ -43,7 +24,7 @@ export const TaskCard = ({ task, onEdit }) => {
     icon: 'Folder',
     color: '#8b5cf6'
   };
-  const IconComponent = getIcon(categoryData.icon);
+  const IconComponent = APP_ICONS[categoryData.icon] || Folder;
 
   // Check if overdue (not completed, has a due date in the past, or time is past today)
   const todayStr = getLocalDateString();

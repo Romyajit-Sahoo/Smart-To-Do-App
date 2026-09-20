@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { EyeOff, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import './DistractionTracker.css';
 
 export const DistractionTracker = () => {

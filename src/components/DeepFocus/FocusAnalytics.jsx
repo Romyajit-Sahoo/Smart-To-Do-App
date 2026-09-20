@@ -1,14 +1,12 @@
-import React from 'react';
+import { useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import './FocusAnalytics.css';
 
 export const FocusAnalytics = () => {
-  const { focusSessions, getLocalDateString } = useApp();
+  const { focusSessions = [], getLocalDateString } = useApp();
 
-  // Generate last 7 days data
-  const getLast7DaysData = () => {
-    const data = [];
+  const data = useMemo(() => {
+    const list = [];
     const today = new Date();
     
     for (let i = 6; i >= 0; i--) {
@@ -16,18 +14,18 @@ export const FocusAnalytics = () => {
       d.setDate(today.getDate() - i);
       const dateStr = getLocalDateString(d);
       
-      const daySessions = focusSessions.filter(s => s.timestamp.startsWith(dateStr));
-      const totalSeconds = daySessions.reduce((acc, s) => acc + s.duration, 0);
+      const daySessions = focusSessions.filter(s => s.timestamp && s.timestamp.startsWith(dateStr));
+      const totalSeconds = daySessions.reduce((acc, s) => acc + (s.duration || 0), 0);
       
-      data.push({
+      list.push({
         name: d.toLocaleDateString('en-US', { weekday: 'short' }),
         hours: Number((totalSeconds / 3600).toFixed(2))
       });
     }
-    return data;
-  };
+    return list;
+  }, [focusSessions, getLocalDateString]);
 
-  const data = getLast7DaysData();
+  const maxHours = Math.max(...data.map(d => d.hours), 1);
   const totalHoursWeek = data.reduce((acc, d) => acc + d.hours, 0).toFixed(1);
 
   return (
@@ -37,20 +35,22 @@ export const FocusAnalytics = () => {
         <span className="fa-total-hours">{totalHoursWeek}h Total</span>
       </div>
       
-      <div className="fa-chart-container">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-            <XAxis dataKey="name" stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
-            <YAxis stroke="var(--text-tertiary)" fontSize={12} tickLine={false} axisLine={false} />
-            <Tooltip 
-              cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
-              contentStyle={{ background: 'var(--panel-bg)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
-              itemStyle={{ color: 'var(--text-primary)' }}
-            />
-            <Bar dataKey="hours" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+      <div className="fa-native-chart">
+        {data.map(item => (
+          <div key={item.name} className="fa-bar-item">
+            <span className="fa-bar-val">{item.hours > 0 ? `${item.hours}h` : ''}</span>
+            <div className="fa-bar-track">
+              <div 
+                className="fa-bar-fill" 
+                style={{ height: `${Math.max(4, (item.hours / maxHours) * 100)}%` }}
+                title={`${item.name}: ${item.hours}h`}
+              />
+            </div>
+            <span className="fa-bar-lbl">{item.name}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
+

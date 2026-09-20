@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Clock, Zap, TrendingUp, Award } from 'lucide-react';
+import { formatTime } from '../../utils/productivityUtils';
 import './FocusSummary.css';
 
 export const FocusSummary = () => {
@@ -17,13 +18,6 @@ export const FocusSummary = () => {
 
     return { todayTime, count, avg, longest };
   }, [focusSessions, getLocalDateString]);
-
-  const formatTime = (seconds) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    if (h > 0) return `${h}h ${m}m`;
-    return `${m}m`;
-  };
 
   return (
     <div className="focus-summary-grid">

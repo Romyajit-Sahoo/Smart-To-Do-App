@@ -1,10 +1,8 @@
-import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { TABS } from '../../constants/constants';
 import { 
   LayoutDashboard, 
   CheckSquare, 
-  Flame, 
   BarChart2, 
   Calendar,
   Trophy,

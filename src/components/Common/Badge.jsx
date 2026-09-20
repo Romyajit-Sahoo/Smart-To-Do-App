@@ -1,4 +1,3 @@
-import React from 'react';
 
 /**
  * Reusable Badge element for categorizing status & priority

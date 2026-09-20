@@ -1,33 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Target, CheckCircle2, Circle, Flame, CheckSquare } from 'lucide-react';
 import './CurrentFocusTask.css';
 
 export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
-  const appState = useApp() || {};
   const { 
     tasks = [], 
-    habits = [], 
     runningFocusSession = null, 
-    getLocalDateString = () => new Date().toISOString().split('T')[0],
-    dailyRecords: contextDailyRecords 
-  } = appState;
-
-  // Defensive fallbacks for GitHub pages deployment with empty localStorage
-  const rawDailyRecords = contextDailyRecords ?? (
-    (() => {
-      try {
-        return JSON.parse(localStorage.getItem('dailyRecords'));
-      } catch {
-        return null;
-      }
-    })()
-  ) ?? {};
-
-  // Ensure dailyRecords is always an object to safely access properties
-  const dailyRecords = (typeof rawDailyRecords === 'object' && rawDailyRecords !== null && !Array.isArray(rawDailyRecords))
-    ? rawDailyRecords
-    : {};
+    getLocalDateString = () => new Date().toISOString().split('T')[0]
+  } = useApp() || {};
 
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionTab, setSelectionTab] = useState('tasks'); // 'tasks' | 'habits'
@@ -39,15 +20,12 @@ export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
     setIsSelecting(false);
   };
 
-  const getFilteredTasks = () => {
-    const todayStr = getLocalDateString();
-    return tasks.filter(t => !t.completed && !t.missed && t.dueDate === todayStr);
-  };
-
+  const todayStr = getLocalDateString();
   const safeTasks = Array.isArray(tasks) ? tasks : [];
-  const isCompleted = activeTask?.type === 'task' 
-    ? safeTasks.find(t => t.id === activeTask?.id)?.completed 
-    : dailyRecords[getLocalDateString()]?.[activeTask?.id];
+  const safeFilteredTasks = safeTasks.filter(t => !t.isHabit && !t.completed && !t.missed && t.dueDate === todayStr);
+  const safeHabits = safeTasks.filter(t => t.isHabit && !t.completed && !t.missed && t.dueDate === todayStr);
+
+  const isCompleted = Boolean(safeTasks.find(t => t.id === activeTask?.id)?.completed);
 
   if (activeTask) {
     return (
@@ -61,7 +39,7 @@ export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
           )}
         </div>
         
-        <h3 className="cft-title">{activeTask.name || activeTask.title}</h3>
+        <h3 className="cft-title">{activeTask.title || activeTask.name}</h3>
         
         <div className="cft-details">
           {activeTask.category && (
@@ -95,9 +73,6 @@ export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
       </div>
     );
   }
-
-  const safeFilteredTasks = Array.isArray(getFilteredTasks()) ? getFilteredTasks() : [];
-  const safeHabits = Array.isArray(habits) ? habits : [];
 
   if (isSelecting) {
     return (
@@ -143,7 +118,7 @@ export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
                 <div key={habit.id} className="cft-list-item" onClick={() => handleSelect(habit, 'habit')}>
                   <Flame size={16} className="cft-list-icon habit" />
                   <div className="cft-list-content">
-                    <span className="cft-list-title">{habit.name}</span>
+                    <span className="cft-list-title">{habit.title || habit.name}</span>
                   </div>
                 </div>
               ))
@@ -169,3 +144,4 @@ export const CurrentFocusTask = ({ onTaskSelect, onTaskComplete }) => {
     </div>
   );
 };
+export default CurrentFocusTask;

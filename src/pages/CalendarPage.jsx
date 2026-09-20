@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { calculateDayPerformance, calculateDayDetailedStats } from '../utils/productivityUtils';
 import { Badge } from '../components/Common/Badge';
@@ -9,13 +9,9 @@ import {
   Search, 
   Calendar as CalendarIcon, 
   List, 
-  Smile, 
-  FileText, 
   AlertCircle, 
   Clock, 
   CheckCircle,
-  HelpCircle,
-  BarChart,
   RefreshCw,
   Folder,
   Tag
@@ -217,7 +213,7 @@ export const CalendarPage = () => {
     }
 
     return daysList;
-  }, [tasks, dailyHistoryNotes, searchQuery, timelineFilter, timelineCategory, categories, getLocalDateString]);
+  }, [tasks, focusSessions, dailyHistoryNotes, searchQuery, timelineFilter, timelineCategory, categories, getLocalDateString]);
 
   const selectedDayDetailed = useMemo(() => {
     if (!selectedDateStr) return null;

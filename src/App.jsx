@@ -1,4 +1,3 @@
-import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { TABS } from './constants/constants';
 import { Sidebar } from './components/Layout/Sidebar';
@@ -10,9 +9,7 @@ import { CalendarPage } from './pages/CalendarPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { GamificationPage } from './pages/GamificationPage';
 import { HabitsPage } from './pages/HabitsPage';
-import { DeepFocusPage } from './pages/DeepFocusPage';
 import { FocusSessionPage } from './pages/FocusSessionPage';
-import { Star } from 'lucide-react';
 import { GamificationProvider } from './context/GamificationContext';
 
 const AppContent = () => {
@@ -32,40 +29,11 @@ const AppContent = () => {
         {activeTab === TABS.DASHBOARD && <Dashboard />}
         {activeTab === TABS.TASKS && <TasksPage />}
         {activeTab === TABS.HABITS && <HabitsPage />}
-        {activeTab === TABS.DEEP_FOCUS && <DeepFocusPage />}
-        {activeTab === TABS.FOCUS_SESSION && <FocusSessionPage />}
+        {(activeTab === TABS.DEEP_FOCUS || activeTab === TABS.FOCUS_SESSION) && <FocusSessionPage />}
         {activeTab === TABS.CALENDAR && <CalendarPage />}
         {activeTab === TABS.ANALYTICS && <AnalyticsPage />}
         {activeTab === TABS.GAMIFICATION && <GamificationPage />}
 
-        {/* Placeholder pages for future features */}
-        {activeTab !== TABS.DASHBOARD && activeTab !== TABS.TASKS && activeTab !== TABS.HABITS && activeTab !== TABS.DEEP_FOCUS && activeTab !== TABS.FOCUS_SESSION && activeTab !== TABS.CALENDAR && activeTab !== TABS.ANALYTICS && activeTab !== TABS.GAMIFICATION && (
-          <div className="page-container" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-            <div className="glass-panel" style={{ padding: '3rem 2rem', textAlign: 'center', marginTop: '2rem' }}>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '64px',
-                height: '64px',
-                backgroundColor: 'var(--primary-light)',
-                borderRadius: 'var(--radius-full)',
-                color: 'var(--primary)',
-                marginBottom: '1.5rem'
-              }}>
-                <Star size={32} />
-              </div>
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{activeTab} Page</h2>
-              <p style={{ color: 'var(--text-secondary)', maxWidth: '440px', margin: '0 auto 1.5rem' }}>
-                The <strong>{activeTab}</strong> dashboard module will be implemented in the next sequence.
-                All Task Management controls (creation, status tracking, filters, searches) are currently live!
-              </p>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)' }}>
-                React SPA - FocusFlow v1.0.0
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Mobile Navigation bar */}
         <MobileNav />

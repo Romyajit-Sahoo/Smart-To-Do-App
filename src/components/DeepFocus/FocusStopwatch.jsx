@@ -1,35 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Play, Pause, Square, RotateCcw } from 'lucide-react';
 import './FocusStopwatch.css';
 
-export const FocusStopwatch = ({ onSessionStop }) => {
+export const FocusStopwatch = ({ onSessionStop, elapsed = 0 }) => {
   const { runningFocusSession, setRunningFocusSession, setFocusDistractions } = useApp();
-  
-  // Local state for UI updates
-  const [elapsed, setElapsed] = useState(0);
-
-  // Sync elapsed time from global state
-  useEffect(() => {
-    let interval;
-    if (runningFocusSession && runningFocusSession.status === 'running') {
-      interval = setInterval(() => {
-        const now = Date.now();
-        const sessionStart = new Date(runningFocusSession.startTime).getTime();
-        const pausedMs = runningFocusSession.totalPausedMs || 0;
-        setElapsed(Math.floor((now - sessionStart - pausedMs) / 1000));
-      }, 1000);
-    } else if (runningFocusSession && runningFocusSession.status === 'paused') {
-      const sessionStart = new Date(runningFocusSession.startTime).getTime();
-      const pausedAt = new Date(runningFocusSession.lastPausedAt).getTime();
-      const pausedMs = runningFocusSession.totalPausedMs || 0;
-      setElapsed(Math.floor((pausedAt - sessionStart - pausedMs) / 1000));
-    } else {
-      setElapsed(0);
-    }
-
-    return () => clearInterval(interval);
-  }, [runningFocusSession]);
 
   const handleStart = () => {
     if (!runningFocusSession || !runningFocusSession.task) {

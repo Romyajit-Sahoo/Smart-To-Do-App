@@ -1,8 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { TaskCard } from '../components/Tasks/TaskCard';
-import { CreateHabitModal } from '../components/Habits/CreateHabitModal';
-import * as Icons from 'lucide-react';
+import { TaskModal } from '../components/Tasks/TaskModal';
+import { 
+  Flame, Edit2, Repeat, Clock, Play, Pause, RotateCcw, 
+  Archive, Plus, Activity, CheckCircle, PauseCircle, Coffee 
+} from 'lucide-react';
+import { APP_ICONS } from '../constants/constants';
 import './HabitsPage.css';
 
 export const HabitsPage = () => {
@@ -46,7 +50,7 @@ export const HabitsPage = () => {
   };
 
   const renderHabitCard = (tpl) => {
-    const Icon = Icons[tpl.icon] || Icons.Flame;
+    const Icon = APP_ICONS[tpl.icon] || Flame;
     const isPaused = !tpl.isActive;
     const isArchived = tpl.isArchived;
 
@@ -61,17 +65,17 @@ export const HabitsPage = () => {
             {tpl.description && <div className="habit-tpl-desc">{tpl.description}</div>}
           </div>
           <button className="icon-btn" onClick={() => handleEditHabit(tpl)} aria-label="Edit Habit">
-            <Icons.Edit2 size={16} />
+            <Edit2 size={16} />
           </button>
         </div>
 
         <div className="habit-meta-badges">
           <span className="habit-meta-badge">
-            <Icons.Repeat size={12} /> {tpl.frequency} {tpl.customInterval ? `(${tpl.customInterval}d)` : ''}
+            <Repeat size={12} /> {tpl.frequency} {tpl.customInterval ? `(${tpl.customInterval}d)` : ''}
           </span>
           {tpl.dueTime && (
             <span className="habit-meta-badge">
-              <Icons.Clock size={12} /> {tpl.dueTime}
+              <Clock size={12} /> {tpl.dueTime}
             </span>
           )}
         </div>
@@ -82,14 +86,14 @@ export const HabitsPage = () => {
               className={`habit-action-btn ${isPaused ? 'play' : 'pause'}`}
               onClick={() => handleTogglePause(tpl)}
             >
-              {isPaused ? <><Icons.Play size={16} /> Resume</> : <><Icons.Pause size={16} /> Pause</>}
+              {isPaused ? <><Play size={16} /> Resume</> : <><Pause size={16} /> Pause</>}
             </button>
           )}
           <button 
             className={`habit-action-btn archive`}
             onClick={() => handleToggleArchive(tpl)}
           >
-            {isArchived ? <><Icons.RotateCcw size={16} /> Restore</> : <><Icons.Archive size={16} /> Archive</>}
+            {isArchived ? <><RotateCcw size={16} /> Restore</> : <><Archive size={16} /> Archive</>}
           </button>
         </div>
       </div>
@@ -100,28 +104,28 @@ export const HabitsPage = () => {
     <div className="habits-page">
       <div className="habits-header-row">
         <h1>
-          <Icons.Flame size={32} color="var(--primary)" /> 
+          <Flame size={32} color="var(--primary)" /> 
           Habits Manager
         </h1>
         <button className="btn btn-primary" onClick={() => { setHabitToEdit(null); setIsModalOpen(true); }}>
-          <Icons.Plus size={18} /> New Habit
+          <Plus size={18} /> New Habit
         </button>
       </div>
 
       {/* OVERVIEW STATS */}
       <div className="habits-stats-grid">
         <div className="habit-stat-card glass-panel">
-          <Icons.Activity size={24} color="var(--primary)" />
+          <Activity size={24} color="var(--primary)" />
           <div className="value">{activeHabits.length}</div>
           <div className="label">Active Habits</div>
         </div>
         <div className="habit-stat-card glass-panel">
-          <Icons.CheckCircle size={24} color="var(--success)" />
+          <CheckCircle size={24} color="var(--success)" />
           <div className="value">{totalCompletions}</div>
           <div className="label">Total Completions</div>
         </div>
         <div className="habit-stat-card glass-panel">
-          <Icons.PauseCircle size={24} color="var(--warning)" />
+          <PauseCircle size={24} color="var(--warning)" />
           <div className="value">{pausedHabits.length}</div>
           <div className="label">Paused Habits</div>
         </div>
@@ -148,7 +152,7 @@ export const HabitsPage = () => {
         <div className="tasks-list">
           {todayInstances.length === 0 ? (
             <div className="empty-state glass-panel">
-              <Icons.Coffee size={48} className="empty-icon" />
+              <Coffee size={48} className="empty-icon" />
               <h3>All caught up!</h3>
               <p>No habits scheduled for today, or you've completed them all.</p>
             </div>
@@ -177,10 +181,11 @@ export const HabitsPage = () => {
       )}
 
       {/* MODAL */}
-      <CreateHabitModal 
+      <TaskModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        habitToEdit={habitToEdit} 
+        onClose={() => { setIsModalOpen(false); setHabitToEdit(null); }} 
+        taskToEdit={habitToEdit} 
+        initialIsHabit={true}
       />
     </div>
   );

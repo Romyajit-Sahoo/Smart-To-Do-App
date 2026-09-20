@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { TABS } from '../constants/constants';
 import { CurrentFocusTask } from '../components/DeepFocus/CurrentFocusTask';
 import { FocusStopwatch } from '../components/DeepFocus/FocusStopwatch';
 import { FocusCountdown } from '../components/DeepFocus/FocusCountdown';
 import { FocusTree } from '../components/DeepFocus/FocusTree';
+import { FocusSummary } from '../components/DeepFocus/FocusSummary';
 import { DistractionTracker } from '../components/DeepFocus/DistractionTracker';
 import { SessionNotesModal } from '../components/DeepFocus/SessionNotesModal';
 import { ArrowLeft, Maximize2, Minimize2, Settings2 } from 'lucide-react';
@@ -20,22 +21,47 @@ export const FocusSessionPage = () => {
     focusDistractions,
     setFocusDistractions,
     toggleTaskCompletion,
-    toggleHabitRecord,
     triggerNotification
   } = useApp();
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMinimal, setIsMinimal] = useState(false);
   const [completedSessionData, setCompletedSessionData] = useState(null);
-  const [timerMode, setTimerMode] = useState(() => runningFocusSession?.mode || 'stopwatch');
+  const [localTimerMode, setLocalTimerMode] = useState('stopwatch');
+  const [runningElapsed, setRunningElapsed] = useState(0);
   const containerRef = useRef(null);
 
-  // Sync mode if it changes externally
+  const timerMode = runningFocusSession?.mode || localTimerMode;
+
+  // Active elapsed calculation: derived when paused/idle, live tick when running
+  const pausedElapsed = (runningFocusSession && runningFocusSession.status === 'paused')
+    ? Math.floor((new Date(runningFocusSession.lastPausedAt).getTime() - new Date(runningFocusSession.startTime).getTime() - (runningFocusSession.totalPausedMs || 0)) / 1000)
+    : 0;
+
+  const elapsed = runningFocusSession?.status === 'paused'
+    ? pausedElapsed
+    : runningFocusSession?.status === 'running'
+      ? runningElapsed
+      : 0;
+
+  // Live timer interval: only active while session status is 'running'
   useEffect(() => {
-    if (runningFocusSession?.mode) {
-      setTimerMode(runningFocusSession.mode);
+    if (!runningFocusSession || runningFocusSession.status !== 'running') {
+      return;
     }
-  }, [runningFocusSession?.mode]);
+
+    const calcElapsed = () => {
+      const now = Date.now();
+      const sessionStart = new Date(runningFocusSession.startTime).getTime();
+      const pausedMs = runningFocusSession.totalPausedMs || 0;
+      setRunningElapsed(Math.floor((now - sessionStart - pausedMs) / 1000));
+    };
+
+    calcElapsed();
+    const interval = setInterval(calcElapsed, 1000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [runningFocusSession?.status, runningFocusSession?.startTime, runningFocusSession?.totalPausedMs]);
 
   // Fullscreen toggle logic - target the container specifically for native browser isolation
   const toggleFullscreen = () => {
@@ -79,14 +105,8 @@ export const FocusSessionPage = () => {
   const handleTaskComplete = (task) => {
     if (!task) return;
 
-    if (task.type === 'task') {
-      toggleTaskCompletion(task.id);
-      triggerNotification("Success!", "Task completed successfully!", 'system');
-    } else if (task.type === 'habit') {
-      const todayStr = getLocalDateString();
-      toggleHabitRecord(todayStr, task.id);
-      triggerNotification("Success!", "Habit marked complete!", 'system');
-    }
+    toggleTaskCompletion(task.id);
+    triggerNotification("Success!", task.type === 'habit' ? "Habit marked complete!" : "Task completed successfully!", 'system');
 
     // Auto-finalize the focus session
     let finalDuration = 0;
@@ -105,7 +125,7 @@ export const FocusSessionPage = () => {
     }
 
     saveFocusSession({
-      id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `session_${crypto.randomUUID()}`,
       startTime: runningFocusSession?.startTime || new Date().toISOString(),
       endTime: new Date().toISOString(),
       duration: finalDuration,
@@ -137,7 +157,7 @@ export const FocusSessionPage = () => {
   const handleSaveSession = (finalData) => {
     // Save the session safely
     saveFocusSession({
-      id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `session_${crypto.randomUUID()}`,
       startTime: finalData?.startTime || completedSessionData?.startTime || new Date().toISOString(),
       endTime: new Date().toISOString(),
       duration: finalData?.duration || completedSessionData?.duration || 0,
@@ -171,7 +191,7 @@ export const FocusSessionPage = () => {
   const handleDiscardSession = () => {
     // Save safely without notes
     saveFocusSession({
-      id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `session_${crypto.randomUUID()}`,
       startTime: completedSessionData?.startTime || new Date().toISOString(),
       endTime: new Date().toISOString(),
       duration: completedSessionData?.duration || 0,
@@ -193,7 +213,7 @@ export const FocusSessionPage = () => {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     }
-    setActiveTab(TABS.DEEP_FOCUS);
+    setActiveTab(TABS.DASHBOARD);
   };
 
   // Safe checks against runningFocusSession being null or undefined
@@ -211,11 +231,14 @@ export const FocusSessionPage = () => {
           </button>
         </div>
         
-        <div className="session-empty-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '2rem' }}>
-          <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', maxWidth: '600px', width: '100%' }}>
-            <h2 style={{ marginBottom: '1rem' }}>🧠 Ready to Focus?</h2>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Select a task or habit to begin your first focus session.</p>
+        <div className="session-empty-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', gap: '2rem', padding: '2rem 1rem' }}>
+          <div className="glass-panel" style={{ padding: '2.5rem', textAlign: 'center', maxWidth: '640px', width: '100%' }}>
+            <h2 style={{ marginBottom: '0.75rem' }}>🧠 Deep Focus</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.75rem' }}>Select a task or habit to begin your focus session.</p>
             <CurrentFocusTask onTaskSelect={handleTaskSelect} onTaskComplete={handleTaskComplete} />
+          </div>
+          <div style={{ maxWidth: '640px', width: '100%' }}>
+            <FocusSummary />
           </div>
         </div>
       </div>
@@ -260,7 +283,7 @@ export const FocusSessionPage = () => {
           <div className="timer-mode-toggle-group" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', margin: '2rem 0 1rem 0', flexWrap: 'wrap' }}>
             <button 
               className={`timer-mode-toggle-btn ${timerMode === 'stopwatch' ? 'active' : ''}`}
-              onClick={() => setTimerMode('stopwatch')}
+              onClick={() => setLocalTimerMode('stopwatch')}
               style={{ 
                 padding: '0.6rem 1.5rem', 
                 borderRadius: 'var(--radius-full)', 
@@ -278,7 +301,7 @@ export const FocusSessionPage = () => {
             </button>
             <button 
               className={`timer-mode-toggle-btn ${timerMode === 'countdown' ? 'active' : ''}`}
-              onClick={() => setTimerMode('countdown')}
+              onClick={() => setLocalTimerMode('countdown')}
               style={{ 
                 padding: '0.6rem 1.5rem', 
                 borderRadius: 'var(--radius-full)', 
@@ -297,16 +320,16 @@ export const FocusSessionPage = () => {
           </div>
 
           {timerMode === 'countdown' ? (
-            <FocusCountdown onSessionStop={handleSessionStop} />
+            <FocusCountdown onSessionStop={handleSessionStop} elapsed={elapsed} />
           ) : (
-            <FocusStopwatch onSessionStop={handleSessionStop} />
+            <FocusStopwatch onSessionStop={handleSessionStop} elapsed={elapsed} />
           )}
         </div>
 
         {/* Auxiliary components (Tree always visible if running, Distractions hidden in minimal mode) */}
         {isRunning && (
           <div className="workspace-auxiliary">
-            <FocusTree />
+            <FocusTree elapsed={elapsed} />
             {!isMinimal && <DistractionTracker />}
           </div>
         )}

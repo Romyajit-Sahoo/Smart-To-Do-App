@@ -116,7 +116,6 @@ export const calculateStreaks = (tasks) => {
 
   // Calculate current streak
   let currentStreak = 0;
-  let currentStreakActive = true;
 
   // We trace backwards from today
   const reversedDates = [...allDates].reverse();
@@ -713,4 +712,41 @@ export const generateSmartInsights = (tasks, categories = [], streakStats = {}) 
   return insights;
 };
 
+/**
+ * Formats duration in seconds to "Xh Ym" or "Ym".
+ * @param {number} seconds Duration in seconds
+ * @returns {string} Formatted duration string
+ */
+export const formatTime = (seconds) => {
+  const s = Math.max(0, Number(seconds) || 0);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+};
+
+/**
+ * Formats timestamp string to human-readable relative time.
+ * @param {string} timestampStr ISO timestamp
+ * @param {number} [nowMs] Optional current epoch ms
+ * @returns {string} Relative time string
+ */
+export const formatRelativeTime = (timestampStr, nowMs = Date.now()) => {
+  if (!timestampStr) return '';
+  try {
+    const diffMs = nowMs - new Date(timestampStr).getTime();
+    if (diffMs < 0) return 'just now';
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return new Date(timestampStr).toLocaleDateString([], { month: 'short', day: 'numeric' });
+  } catch {
+    return '';
+  }
+};
 

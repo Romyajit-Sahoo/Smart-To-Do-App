@@ -1,32 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Sprout, TreePine, TreeDeciduous } from 'lucide-react';
 import './FocusTree.css';
 
-export const FocusTree = () => {
+export const FocusTree = ({ elapsed = 0 }) => {
   const { runningFocusSession } = useApp();
-  const [elapsed, setElapsed] = useState(0);
-
-  useEffect(() => {
-    let interval;
-    if (runningFocusSession && runningFocusSession.status === 'running') {
-      interval = setInterval(() => {
-        const now = Date.now();
-        const sessionStart = new Date(runningFocusSession.startTime).getTime();
-        const pausedMs = runningFocusSession.totalPausedMs || 0;
-        setElapsed(Math.floor((now - sessionStart - pausedMs) / 1000));
-      }, 1000);
-    } else if (runningFocusSession && runningFocusSession.status === 'paused') {
-      const sessionStart = new Date(runningFocusSession.startTime).getTime();
-      const pausedAt = new Date(runningFocusSession.lastPausedAt).getTime();
-      const pausedMs = runningFocusSession.totalPausedMs || 0;
-      setElapsed(Math.floor((pausedAt - sessionStart - pausedMs) / 1000));
-    } else {
-      setElapsed(0);
-    }
-
-    return () => clearInterval(interval);
-  }, [runningFocusSession]);
 
   // Determine tree stage based on elapsed time (e.g., 5 mins per stage for demo purposes, can be tuned)
   const getTreeStage = (seconds) => {

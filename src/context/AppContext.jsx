@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { DEFAULT_CATEGORIES, TABS, PRIORITIES } from '../constants/constants';
+import { DEFAULT_CATEGORIES, TABS } from '../constants/constants';
 
 const AppContext = createContext();
 
@@ -25,19 +25,6 @@ export const AppProvider = ({ children }) => {
 
   // 4.d Recent Activity Log (Feature 9)
   const [activities, setActivities] = useLocalStorage('activities', []);
-
-  // 5. Habits Configuration State (Feature 7)
-  const [habits, setHabits] = useLocalStorage('habits', [
-    { id: 'h1', name: 'Wake up at 5 AM', icon: 'Sun', color: '#f59e0b' },
-    { id: 'h2', name: 'LeetCode Practice', icon: 'Code', color: '#10b981' },
-    { id: 'h3', name: 'Workout', icon: 'Dumbbell', color: '#ef4444' },
-    { id: 'h4', name: 'Read Book', icon: 'Book', color: '#ec4899' },
-    { id: 'h5', name: 'Meditation', icon: 'Compass', color: '#8b5cf6' },
-    { id: 'h6', name: 'Drink 3L Water', icon: 'Droplet', color: '#3b82f6' }
-  ]);
-
-  // 6. Daily Records for Habits state (Stores completions per date: { "2026-08-01": { h1: true, h2: false } })
-  const [dailyRecords, setDailyRecords] = useLocalStorage('dailyRecords', {});
 
   // 6.b Daily Notes and Reflection Journal (Feature 12)
   const [dailyHistoryNotes, setDailyHistoryNotes] = useLocalStorage('dailyHistoryNotes', {});
@@ -88,7 +75,7 @@ export const AppProvider = ({ children }) => {
   // Helper to log recent activities (Feature 9)
   const logActivity = (type, taskTitle) => {
     const newActivity = {
-      id: `act_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `act_${crypto.randomUUID()}`,
       type, // 'created' | 'completed' | 'uncompleted' | 'missed' | 'deleted'
       taskTitle: taskTitle.trim(),
       timestamp: new Date().toISOString()
@@ -156,7 +143,7 @@ export const AppProvider = ({ children }) => {
             if (!exists) {
               const isPast = dateStr < todayStr;
               nextTasks.push({
-                id: `task_inst_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                id: `task_inst_${crypto.randomUUID()}`,
                 recurringTaskId: tpl.id,
                 generatedDate: dateStr,
                 title: tpl.title,
@@ -191,53 +178,6 @@ export const AppProvider = ({ children }) => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Auto-Check and Mark Missed / Auto-Generate tasks on day change
-  useEffect(() => {
-    const todayStr = getLocalDateString();
-    
-    // Log missed activities BEFORE running generation to avoid duplicate events
-    if (lastCheckedDate && lastCheckedDate < todayStr) {
-      const missedTasks = tasks.filter(t => !t.completed && !t.missed && t.dueDate && t.dueDate < todayStr);
-      missedTasks.forEach(t => {
-        logActivity('missed', t.title);
-      });
-
-      // Raise missed alerts notification (Feature 13)
-      if (missedTasks.length > 0 && notificationSettings.missedAlertsEnabled) {
-        triggerNotification(
-          "Yesterday's Recap",
-          `You missed ${missedTasks.length} task${missedTasks.length > 1 ? 's' : ''} yesterday. Let's start fresh today!`,
-          'missed'
-        );
-      }
-    }
-
-    if (!lastCheckedDate) {
-      // First time init
-      setLastCheckedDate(todayStr);
-      generateTasksForDateRange(todayStr, todayStr);
-    } else if (lastCheckedDate < todayStr) {
-      // User opens app on a new day (or later), run rollover evaluations
-      generateTasksForDateRange(lastCheckedDate, todayStr);
-      setLastCheckedDate(todayStr);
-
-      // Trigger morning summary briefing after generation completes
-      setTimeout(() => {
-        const todayTasks = tasks.filter(t => t.dueDate === todayStr);
-        if (notificationSettings.dailySummaryEnabled && todayTasks.length > 0) {
-          triggerNotification(
-            "Today's Overview",
-            `Good Morning! You have ${todayTasks.length} task${todayTasks.length > 1 ? 's' : ''} scheduled for today.`,
-            'system'
-          );
-        }
-      }, 500);
-    } else {
-      // Normal refresh, confirm today's tasks are generated
-      generateTasksForDateRange(todayStr, todayStr);
-    }
-  }, [recurringTasks]);
-
   // Synthetic Sound Beep using AudioContext (Feature 13)
   const playNotificationSound = () => {
     try {
@@ -254,6 +194,9 @@ export const AppProvider = ({ children }) => {
       
       oscillator.start();
       oscillator.stop(audioCtx.currentTime + 0.15);
+      oscillator.onended = () => {
+        audioCtx.close().catch(() => {});
+      };
     } catch (e) {
       console.log("AudioContext blocked or not supported:", e);
     }
@@ -306,7 +249,7 @@ export const AppProvider = ({ children }) => {
 
     if (notificationSettings.inAppEnabled) {
       const newNotif = {
-        id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `notif_${crypto.randomUUID()}`,
         title,
         body,
         type, // 'reminder' | 'completed' | 'missed' | 'generation' | 'system'
@@ -328,6 +271,54 @@ export const AppProvider = ({ children }) => {
       }
     }
   };
+
+  // Auto-Check and Mark Missed / Auto-Generate tasks on day change
+  useEffect(() => {
+    const todayStr = getLocalDateString();
+    
+    // Log missed activities BEFORE running generation to avoid duplicate events
+    if (lastCheckedDate && lastCheckedDate < todayStr) {
+      const missedTasks = tasks.filter(t => !t.completed && !t.missed && t.dueDate && t.dueDate < todayStr);
+      missedTasks.forEach(t => {
+        logActivity('missed', t.title);
+      });
+
+      // Raise missed alerts notification (Feature 13)
+      if (missedTasks.length > 0 && notificationSettings.missedAlertsEnabled) {
+        triggerNotification(
+          "Yesterday's Recap",
+          `You missed ${missedTasks.length} task${missedTasks.length > 1 ? 's' : ''} yesterday. Let's start fresh today!`,
+          'missed'
+        );
+      }
+    }
+
+    if (!lastCheckedDate) {
+      // First time init
+      setLastCheckedDate(todayStr);
+      generateTasksForDateRange(todayStr, todayStr);
+    } else if (lastCheckedDate < todayStr) {
+      // User opens app on a new day (or later), run rollover evaluations
+      generateTasksForDateRange(lastCheckedDate, todayStr);
+      setLastCheckedDate(todayStr);
+
+      // Trigger morning summary briefing after generation completes
+      setTimeout(() => {
+        const todayTasks = tasks.filter(t => t.dueDate === todayStr);
+        if (notificationSettings.dailySummaryEnabled && todayTasks.length > 0) {
+          triggerNotification(
+            "Today's Overview",
+            `Good Morning! You have ${todayTasks.length} task${todayTasks.length > 1 ? 's' : ''} scheduled for today.`,
+            'system'
+          );
+        }
+      }, 500);
+    } else {
+      // Normal refresh, confirm today's tasks are generated
+      generateTasksForDateRange(todayStr, todayStr);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recurringTasks]);
 
   const markNotificationRead = (notifId) => {
     setNotifications(prev => prev.map(n => n.id === notifId ? { ...n, unread: false } : n));
@@ -442,6 +433,7 @@ export const AppProvider = ({ children }) => {
     checkReminders(); // check immediately on mount
 
     return () => clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tasks, firedReminders, snoozedReminders, notificationSettings]);
 
   // Theme Toggler
@@ -453,7 +445,7 @@ export const AppProvider = ({ children }) => {
   const addRecurringTask = (taskData) => {
     const todayStr = getLocalDateString();
     const newTemplate = {
-      id: `rec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `rec_${crypto.randomUUID()}`,
       title: taskData.title.trim(),
       description: taskData.description?.trim() || '',
       category: taskData.category || 'personal',
@@ -541,7 +533,7 @@ export const AppProvider = ({ children }) => {
 
     if (!taskData.frequency || taskData.frequency === 'one-time') {
       const newTask = {
-        id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `task_${crypto.randomUUID()}`,
         recurringTaskId: null,
         title: taskData.title.trim(),
         description: taskData.description?.trim() || '',
@@ -702,7 +694,7 @@ export const AppProvider = ({ children }) => {
 
     const copiedTask = {
       ...taskToCopy,
-      id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `task_${crypto.randomUUID()}`,
       recurringTaskId: null, // Duplicates are standalone copies
       title: `${taskToCopy.title} (Copy)`,
       createdDate: new Date().toISOString(),
@@ -732,20 +724,6 @@ export const AppProvider = ({ children }) => {
     setCategories(prev => [...prev, newCategory]);
   };
 
-  // Habit Record Toggler (Updates recurring progress per day)
-  const toggleHabitRecord = (dateStr, habitId) => {
-    setDailyRecords(prev => {
-      const dayData = prev[dateStr] || {};
-      const updatedDayData = {
-        ...dayData,
-        [habitId]: !dayData[habitId],
-      };
-      return {
-        ...prev,
-        [dateStr]: updatedDayData,
-      };
-    });
-  };
 
   // Save Daily reflection notes/mood ratings (Feature 12)
   const saveDailyHistoryNotes = (dateStr, noteData) => {
@@ -784,10 +762,6 @@ export const AppProvider = ({ children }) => {
         deleteRecurringTask,
         toggleTaskCompletion,
         duplicateTask,
-        habits,
-        setHabits,
-        dailyRecords,
-        toggleHabitRecord,
         dailyHistoryNotes,
         saveDailyHistoryNotes,
         notifications,
@@ -821,6 +795,7 @@ export const AppProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) {

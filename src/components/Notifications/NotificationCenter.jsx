@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { 
   Bell, 
@@ -6,17 +6,14 @@ import {
   Trash2, 
   Check, 
   Clock, 
-  Volume2, 
-  VolumeX, 
   Moon, 
-  Sun, 
   X,
   AlertCircle,
   CheckCircle,
   Info,
-  Calendar,
   ChevronDown
 } from 'lucide-react';
+import { formatRelativeTime } from '../../utils/productivityUtils';
 import './NotificationCenter.css';
 
 export const NotificationCenter = () => {
@@ -82,21 +79,6 @@ export const NotificationCenter = () => {
     setActiveSnoozeTaskId(null);
   };
 
-  // Format Elapsed Time
-  const formatTimeElapsed = (timestampStr) => {
-    try {
-      const diffMs = Date.now() - new Date(timestampStr).getTime();
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMins / 60);
-
-      if (diffMins < 1) return 'just now';
-      if (diffMins < 60) return `${diffMins}m ago`;
-      if (diffHours < 24) return `${diffHours}h ago`;
-      return new Date(timestampStr).toLocaleDateString([], { month: 'short', day: 'numeric' });
-    } catch {
-      return '';
-    }
-  };
 
   // Handle setting checkboxes
   const handleToggleSetting = (key) => {
@@ -271,7 +253,7 @@ export const NotificationCenter = () => {
                         <div className="item-card-body">
                           <div className="item-title-line">
                             <span className="item-card-title">{notif.title}</span>
-                            <span className="item-card-time">{formatTimeElapsed(notif.timestamp)}</span>
+                            <span className="item-card-time">{formatRelativeTime(notif.timestamp)}</span>
                           </div>
                           <p className="item-card-desc">{notif.body}</p>
 
