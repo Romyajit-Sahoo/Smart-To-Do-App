@@ -725,6 +725,27 @@ export const formatTime = (seconds) => {
 };
 
 /**
+ * Formats seconds into a timer display string ("MM:SS" or "HH:MM:SS").
+ * @param {number} seconds Duration in seconds
+ * @returns {string} Formatted timer string
+ */
+export const formatTimerDisplay = (seconds) => {
+  const s = Math.max(0, Number(seconds) || 0);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+
+  const mm = String(m).padStart(2, '0');
+  const ss = String(sec).padStart(2, '0');
+
+  if (h > 0) {
+    const hh = String(h).padStart(2, '0');
+    return `${hh}:${mm}:${ss}`;
+  }
+  return `${mm}:${ss}`;
+};
+
+/**
  * Formats timestamp string to human-readable relative time.
  * @param {string} timestampStr ISO timestamp
  * @param {number} [nowMs] Optional current epoch ms
@@ -733,7 +754,9 @@ export const formatTime = (seconds) => {
 export const formatRelativeTime = (timestampStr, nowMs = Date.now()) => {
   if (!timestampStr) return '';
   try {
-    const diffMs = nowMs - new Date(timestampStr).getTime();
+    const parsedTime = new Date(timestampStr).getTime();
+    if (isNaN(parsedTime)) return '';
+    const diffMs = nowMs - parsedTime;
     if (diffMs < 0) return 'just now';
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMins / 60);
@@ -749,4 +772,5 @@ export const formatRelativeTime = (timestampStr, nowMs = Date.now()) => {
     return '';
   }
 };
+
 

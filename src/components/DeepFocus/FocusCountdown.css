@@ -2,25 +2,43 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.5rem 2rem;
-  gap: 2rem;
+  padding: 2.25rem 1.5rem;
+  gap: 1.75rem;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
+  container-type: inline-size;
 }
 
 .countdown-display {
-  font-size: clamp(2.2rem, 8vw, 6rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(2rem, 9.5cqw, 3.75rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  letter-spacing: clamp(1px, 0.5vw, 2px);
+  letter-spacing: 0.5px;
   color: var(--text-primary);
   transition: color 0.3s ease, text-shadow 0.3s ease;
   white-space: nowrap;
   text-align: center;
   max-width: 100%;
   line-height: 1.1;
+}
+
+.time-part {
+  display: inline-block;
+  min-width: 2ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-sep {
+  display: inline-block;
+  margin: 0 0.35rem;
+  opacity: 0.8;
+  font-weight: 700;
 }
 
 .countdown-display.running {
@@ -213,19 +231,13 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
+/* Fullscreen and Minimal Mode expansions */
+.is-fullscreen .countdown-display,
+.is-minimal .countdown-display {
+  font-size: clamp(3rem, 12cqw, 5.5rem);
+}
+
 /* Responsive Overrides */
-@media (min-width: 1024px) {
-  .countdown-display {
-    font-size: 6rem;
-  }
-}
-
-@media (max-width: 1023px) and (min-width: 768px) {
-  .countdown-display {
-    font-size: 4rem;
-  }
-}
-
 @media (max-width: 767px) {
   .focus-countdown-container {
     padding: 1.5rem 1rem;
@@ -233,9 +245,13 @@
   }
 
   .countdown-display {
-    font-size: clamp(2rem, 9.5vw, 3rem);
+    font-size: clamp(1.85rem, 8.5vw, 2.75rem);
   }
   
+  .time-sep {
+    margin: 0 0.2rem;
+  }
+
   .countdown-presets-container {
     padding: 0;
   }
@@ -253,7 +269,11 @@
 
 @media (max-width: 360px) {
   .countdown-display {
-    font-size: 1.85rem;
+    font-size: clamp(1.45rem, 7.5vw, 1.85rem);
+  }
+
+  .time-sep {
+    margin: 0 0.15rem;
   }
 
   .presets-grid {

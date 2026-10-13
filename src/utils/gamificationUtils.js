@@ -44,14 +44,15 @@ export const getXpForLevel = (level) => {
  * Calculates current level and progress given a total XP amount.
  */
 export const calculateLevelProgress = (totalXp) => {
+  const safeXp = Math.max(0, Number(totalXp) || 0);
   let level = 1;
-  while (totalXp >= getXpForLevel(level + 1)) {
+  while (safeXp >= getXpForLevel(level + 1)) {
     level++;
   }
   
   const currentLevelXp = getXpForLevel(level);
   const nextLevelXp = getXpForLevel(level + 1);
-  const xpInCurrentLevel = totalXp - currentLevelXp;
+  const xpInCurrentLevel = safeXp - currentLevelXp;
   const xpNeededForNext = nextLevelXp - currentLevelXp;
   const progressPercentage = (xpInCurrentLevel / xpNeededForNext) * 100;
 
@@ -61,7 +62,7 @@ export const calculateLevelProgress = (totalXp) => {
     xpNeededForNext,
     progressPercentage: Math.min(Math.max(progressPercentage, 0), 100),
     nextLevelXp,
-    xpToNextLevel: nextLevelXp - totalXp
+    xpToNextLevel: nextLevelXp - safeXp
   };
 };
 
@@ -112,17 +113,19 @@ export const ACHIEVEMENTS = [
  * Checks which achievements the user has unlocked based on current stats.
  * Returns array of newly unlocked achievement IDs.
  */
-export const evaluateAchievements = (stats, currentUnlockedIds) => {
+export const evaluateAchievements = (stats = {}, currentUnlockedIds = []) => {
   const newUnlocks = [];
+  const safeStats = stats || {};
+  const safeUnlockedIds = Array.isArray(currentUnlockedIds) ? currentUnlockedIds : [];
   
   ACHIEVEMENTS.forEach(achievement => {
-    if (currentUnlockedIds.includes(achievement.id)) return; // Already unlocked
+    if (safeUnlockedIds.includes(achievement.id)) return; // Already unlocked
     
     let progress = 0;
-    if (achievement.type === 'tasks') progress = stats.totalTasksCompleted || 0;
-    if (achievement.type === 'streak') progress = stats.longestStreak || 0;
-    if (achievement.type === 'high_priority') progress = stats.highPriorityCompleted || 0;
-    if (achievement.type === 'habits') progress = stats.totalHabitsCompleted || 0;
+    if (achievement.type === 'tasks') progress = safeStats.totalTasksCompleted || 0;
+    if (achievement.type === 'streak') progress = safeStats.longestStreak || 0;
+    if (achievement.type === 'high_priority') progress = safeStats.highPriorityCompleted || 0;
+    if (achievement.type === 'habits') progress = safeStats.totalHabitsCompleted || 0;
 
     if (progress >= achievement.target) {
       newUnlocks.push(achievement);
@@ -154,18 +157,22 @@ export const BADGES = [
   { id: 'badge_grandmaster', name: 'Ascended', tier: 'LEGENDARY', icon: 'Crown', conditionDesc: 'Reach Rank Grandmaster' }
 ];
 
-export const evaluateBadges = (stats, level, currentBadgeIds) => {
+export const evaluateBadges = (stats = {}, level = 1, currentBadgeIds = []) => {
   const newBadges = [];
+  const safeStats = stats || {};
+  const safeBadgeIds = Array.isArray(currentBadgeIds) ? currentBadgeIds : [];
+  const safeLevel = Number(level) || 1;
+
   BADGES.forEach(b => {
-    if (currentBadgeIds.includes(b.id)) return;
+    if (safeBadgeIds.includes(b.id)) return;
     
     let unlocked = false;
-    if (b.id === 'badge_first_blood' && stats.totalTasksCompleted >= 5) unlocked = true;
-    if (b.id === 'badge_dedicated' && level >= 5) unlocked = true;
-    if (b.id === 'badge_golden_week' && stats.longestStreak >= 7) unlocked = true;
-    if (b.id === 'badge_diamond_month' && stats.longestStreak >= 30) unlocked = true;
-    if (b.id === 'badge_centurion' && stats.totalTasksCompleted >= 100) unlocked = true;
-    if (b.id === 'badge_grandmaster' && level >= 70) unlocked = true;
+    if (b.id === 'badge_first_blood' && (safeStats.totalTasksCompleted || 0) >= 5) unlocked = true;
+    if (b.id === 'badge_dedicated' && safeLevel >= 5) unlocked = true;
+    if (b.id === 'badge_golden_week' && (safeStats.longestStreak || 0) >= 7) unlocked = true;
+    if (b.id === 'badge_diamond_month' && (safeStats.longestStreak || 0) >= 30) unlocked = true;
+    if (b.id === 'badge_centurion' && (safeStats.totalTasksCompleted || 0) >= 100) unlocked = true;
+    if (b.id === 'badge_grandmaster' && safeLevel >= 70) unlocked = true;
 
     if (unlocked) newBadges.push(b);
   });
@@ -176,23 +183,24 @@ export const evaluateBadges = (stats, level, currentBadgeIds) => {
 // 5. MOTIVATION ENGINE
 // -----------------------------------------
 export const generateMotivationMessage = (levelProgress, stats) => {
-  const messages = [];
-  
-  if (levelProgress.xpToNextLevel < 100) {
-    messages.push(`You are only ${levelProgress.xpToNextLevel} XP away from Level ${levelProgress.level + 1}!`);
+  const safeProgress = levelProgress || {};
+  const safeStats = stats || {};
+
+  if (safeProgress.xpToNextLevel !== undefined && safeProgress.xpToNextLevel < 100 && safeProgress.xpToNextLevel > 0) {
+    return `You are only ${safeProgress.xpToNextLevel} XP away from Level ${(safeProgress.level || 1) + 1}!`;
   }
   
-  if (stats.currentStreak > 1) {
-    messages.push(`You're on a ${stats.currentStreak}-day streak! Keep the fire burning.`);
-  } else if (stats.currentStreak === 0 && stats.totalTasksCompleted > 0) {
-    messages.push(`Every master was once a beginner. Start a new streak today!`);
+  if (safeStats.currentStreak > 1) {
+    return `You're on a ${safeStats.currentStreak}-day streak! Keep the fire burning.`;
   }
   
-  if (stats.totalTasksCompleted === 0) {
-    messages.push("Welcome! Complete your first task to start earning XP.");
+  if (safeStats.totalTasksCompleted === 0) {
+    return "Welcome! Complete your first task to start earning XP.";
   }
 
-  // Pick a random one if multiple exist
-  if (messages.length === 0) return "Stay focused and conquer your day!";
-  return messages[Math.floor(Math.random() * messages.length)];
+  if (safeStats.currentStreak === 0 && (safeStats.totalTasksCompleted || 0) > 0) {
+    return "Every master was once a beginner. Start a new streak today!";
+  }
+
+  return "Stay focused and conquer your day!";
 };
